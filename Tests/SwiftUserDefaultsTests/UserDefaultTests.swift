@@ -84,4 +84,19 @@ final class UserDefaultTests: XCTestCase {
         XCTAssertTrue(wrapper.wrappedValue)
         XCTAssertNil(userDefaults.object(forKey: "BoolKey"))
     }
+
+    func testObserver() {
+        var wrapper = UserDefault<String>(key: "StringKey", userDefaults: userDefaults, defaultValue: "")
+
+        var changes: [UserDefaults.Change<String>] = []
+        let observer = wrapper.addObserver { changes.append($0) }
+        addTeardownBlock(observer.invalidate)
+
+        wrapper.wrappedValue = "One"
+        wrapper.reset()
+        wrapper.wrappedValue = "Two"
+        userDefaults.set("Three", for: "StringKey")
+
+        XCTAssertEqual(changes, [.initial(""), .update("One"), .update(""), .update("Two"), .update("Three")])
+    }
 }

@@ -58,6 +58,16 @@ public struct UserDefault<Value> {
     public func reset() {
         userDefaults.removeObject(forKey: key.rawValue)
     }
+
+    /// Observes changes to the specified user default in the underlying database.
+    /// 
+    /// - Parameter handler: A closure invoked whenever the observed value is modified.
+    /// - Returns: A token object to be used to invalidate the observation by either deallocating the value or calling `invalidate()`.
+    public func addObserver(handler: @escaping (UserDefaults.Change<Value>) -> Void) -> UserDefaults.Observation {
+        userDefaults.observeObject(forKey: key.rawValue) { change in
+            handler(change.map({ valueDecoder($0) }))
+        }
+    }
 }
 
 // MARK: - Initializers
@@ -98,4 +108,3 @@ public extension UserDefault {
         )
     }
 }
-
