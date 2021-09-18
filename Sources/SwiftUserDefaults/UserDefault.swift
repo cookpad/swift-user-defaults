@@ -45,9 +45,18 @@ public struct UserDefault<Value> {
             if let value = valueEncoder(newValue) {
                 userDefaults.set(value, forKey: key.rawValue)
             } else {
-                userDefaults.removeObject(forKey: key.rawValue)
+                reset()
             }
         }
+    }
+
+    public var projectedValue: Self {
+        self
+    }
+
+    /// Removes any previously stored value from `UserDefaults` resetting the wrapped value to either `nil` or its default value.
+    public func reset() {
+        userDefaults.removeObject(forKey: key.rawValue)
     }
 }
 

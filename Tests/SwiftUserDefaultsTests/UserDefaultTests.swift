@@ -70,4 +70,18 @@ final class UserDefaultTests: XCTestCase {
         userDefaults.setValue(0, forKey: "IntegerKey")
         XCTAssertEqual(wrapper.wrappedValue, 0)
     }
+
+    func testReset() {
+        var wrapper = UserDefault<Bool>(key: "BoolKey", userDefaults: userDefaults, defaultValue: true)
+
+        // When setting the value, it is written to UserDefaults
+        wrapper.wrappedValue = false
+        XCTAssertFalse(wrapper.wrappedValue)
+        XCTAssertEqual(userDefaults.object(forKey: "BoolKey") as? Bool, false)
+
+        // When resetting the value, it's cleared from UserDefaults and the wrappedValue uses the defaultValue
+        wrapper.reset()
+        XCTAssertTrue(wrapper.wrappedValue)
+        XCTAssertNil(userDefaults.object(forKey: "BoolKey"))
+    }
 }
