@@ -20,11 +20,12 @@
 /// OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 /// SOFTWARE.
 
+import ExampleKit
 import SwiftUI
 
 struct ContentView: View {
     // AppStorage is backed by UserDefaults so this works too!
-    @AppStorage("ContentTitle") var title: String?
+    @AppStorage(.contentTitle) var title: String?
     @ObservedObject var viewModel = ContentViewModel()
 
     var body: some View {
