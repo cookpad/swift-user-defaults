@@ -52,7 +52,7 @@ public extension UserDefaults {
     /// - Parameter key: A key in the user‘s defaults database.
     /// - Returns: The object associated with the specified key, or `nil` if the key was not found or if the value did not match the generic type `T`.
     func object<T: UserDefaultsStorable>(for key: Key) -> T? {
-        object(forKey: key.rawValue).flatMap(T.init(storedValue:))
+        object(forKey: key.rawValue).flatMap({ UserDefaultsDecoder.decode(from: $0, context: key) })
     }
 
     /// Returns the object associated with the specified key.
@@ -74,7 +74,7 @@ public extension UserDefaults {
         handler: @escaping (Change<T?>) -> Void
     ) -> Observation {
         observeObject(forKey: key.rawValue) { change in
-            handler(change.map({ $0.flatMap(T.init(storedValue:)) }))
+            handler(change.map({ $0.flatMap({ UserDefaultsDecoder.decode(from: $0, context: key) }) }))
         }
     }
 

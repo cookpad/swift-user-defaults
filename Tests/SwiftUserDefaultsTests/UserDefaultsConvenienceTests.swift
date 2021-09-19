@@ -59,4 +59,18 @@ final class UserDefaultsConvenienceTests: XCTestCase {
         // Changes should have been observed
         XCTAssertEqual(changes, [.initial(nil), .update(.baz), .update(nil), .update(.bar)])
     }
+
+    func testDecodeFailsGracefully() {
+        // When underlying data is a String
+        userDefaults.set("0", forKey: "NumberAsString")
+
+        // And we try to cast to Int
+        let value = userDefaults.object(for: "NumberAsString", as: Int.self)
+
+        // Returned value is `nil`
+        XCTAssertNil(value)
+
+        // And log message is sent:
+        // [UserDefaultsDecoder] Unable to decode 'NumberAsString' as Int when stored object was NSTaggedPointerString
+    }
 }

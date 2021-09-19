@@ -92,7 +92,7 @@ public extension UserDefault {
             key: key,
             userDefaults: userDefaults,
             valueEncoder: { $0.storableValue },
-            valueDecoder: { $0.flatMap(Value.init(storedValue:)) ?? defaultValue }
+            valueDecoder: { $0.flatMap({ UserDefaultsDecoder.decode(from: $0, context: key) }) ?? defaultValue }
         )
     }
 
@@ -141,7 +141,7 @@ public extension UserDefault where Value: ExpressibleByNilLiteral {
             key: key,
             userDefaults: userDefaults,
             valueEncoder: { $0?.storableValue },
-            valueDecoder: { $0.flatMap(T.init(storedValue:)) }
+            valueDecoder: { $0.flatMap({ UserDefaultsDecoder.decode(from: $0, context: key) }) }
         )
     }
 }
