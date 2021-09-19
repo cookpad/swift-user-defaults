@@ -41,7 +41,7 @@ public struct UserDefault<Value> {
         get {
             valueDecoder(userDefaults.value(forKey: key.rawValue))
         }
-        set {
+        nonmutating set {
             if let value = valueEncoder(newValue) {
                 userDefaults.set(value, forKey: key.rawValue)
             } else {
