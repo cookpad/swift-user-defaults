@@ -21,21 +21,21 @@
 /// SOFTWARE.
 
 import ExampleKit
-import UserDefaults.Value
+import SwiftUserDefaults
 import XCTest
 
 class ExampleUITests: XCTestCase {
     func testNoItemsPlaceholder() {
         // Configure UserDefaults to ensure that there are no items
         // Use the UserDefaults.Key constants from ExampleKit to keep test code in sync
-        let userDefaults: [UserDefaults.Key: UserDefaults.Value] = [
+        let userDefaults: [UserDefaults.Key: UserDefaultsStorable] = [
             .contentTitle: "Example App",
-            .contentItems: []
+            .contentItems: Array<Date>()
         ]
 
         // Launch the app with the user defaults
         let app = XCUIApplication()
-        app.launchArguments = UserDefaults.Value.launchArguments(from: userDefaults)
+        app.launchArguments = UserDefaults.launchArguments(from: userDefaults)
         app.launch()
 
         // Ensure the placeholder is set properly
@@ -49,22 +49,22 @@ class ExampleUITests: XCTestCase {
 
         // Configure UserDefaults to contain items with known dates
         // Use 'String' keys for a simplified extension (avoiding UserDefaults.Key)
-        let userDefaults: [String: UserDefaults.Value] = [
+        let userDefaults: [String: UserDefaultsStorable] = [
             "AppleLanguages": ["fr_FR"],
             "ContentTitle": "Example App",
             "ContentItems": [
-                .date(startDate),
-                .date(calendar.date(byAdding: .day, value: 1, to: startDate)!),
-                .date(calendar.date(byAdding: .day, value: 2, to: startDate)!),
-                .date(calendar.date(byAdding: .day, value: 3, to: startDate)!),
-                .date(calendar.date(byAdding: .day, value: 4, to: startDate)!),
-                .date(calendar.date(byAdding: .day, value: 5, to: startDate)!)
+                startDate,
+                calendar.date(byAdding: .day, value: 1, to: startDate)!,
+                calendar.date(byAdding: .day, value: 2, to: startDate)!,
+                calendar.date(byAdding: .day, value: 3, to: startDate)!,
+                calendar.date(byAdding: .day, value: 4, to: startDate)!,
+                calendar.date(byAdding: .day, value: 5, to: startDate)!
             ]
         ]
 
         // Launch the app with the user defaults
         let app = XCUIApplication()
-        app.launchArguments = UserDefaults.Value.launchArguments(from: userDefaults)
+        app.launchArguments = UserDefaults.launchArguments(from: userDefaults)
         app.launch()
 
         // Find a known cell, ensure it exists

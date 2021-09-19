@@ -22,6 +22,7 @@
 
 import ExampleKit
 import Foundation
+import SwiftUserDefaults
 
 class ContentViewModel: ObservableObject {
     let dateFormatter: DateFormatter = {
@@ -40,7 +41,7 @@ class ContentViewModel: ObservableObject {
     }
 
     init() {
-        items = userDefaults.array(for: .contentItems) as? [Date] ?? []
+        items = userDefaults.object(for: .contentItems) ?? []
     }
 
     func addItem() {

@@ -21,6 +21,7 @@
 /// SOFTWARE.
 
 import Foundation
+import SwiftUserDefaults
 
 // Defines UserDefault preference keys used by the Example app.
 // These constants live in ExampleKit so that they can be shared between Example and ExampleUITests.

@@ -9,12 +9,12 @@ let package = Package(
         .iOS(.v14)
     ],
     products: [
-        .library(name: "ExampleKit", targets: ["ExampleKit"]),
+        .library(name: "ExampleKit", targets: ["ExampleKit"])
     ],
     dependencies: [
         .package(path: "../../")
     ],
     targets: [
-        .target(name: "ExampleKit", dependencies: ["UserDefaultValue"]),
+        .target(name: "ExampleKit", dependencies: [.product(name: "SwiftUserDefaults", package: "swift-user-defaults")])
     ]
 )
