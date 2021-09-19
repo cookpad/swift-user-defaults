@@ -33,7 +33,7 @@ final class UserDefaultTests: XCTestCase {
     }
 
     func testUserDefaultsStorableType() {
-        let wrapper = UserDefault<String>(key: "StringKey", userDefaults: userDefaults, defaultValue: "")
+        let wrapper = UserDefault<String>("StringKey", store: userDefaults, defaultValue: "")
 
         // When UserDefaults does not have a value, the default value is used
         XCTAssertNil(userDefaults.object(forKey: "StringKey"))
@@ -50,7 +50,7 @@ final class UserDefaultTests: XCTestCase {
     }
 
     func testOptionalUserDefaultsStorableType() {
-        let wrapper = UserDefault<Int?>(key: "IntegerKey", userDefaults: userDefaults)
+        let wrapper = UserDefault<Int?>("IntegerKey", store: userDefaults)
 
         // When UserDefaults does not have a value, the default value is nil
         XCTAssertNil(userDefaults.object(forKey: "IntegerKey"))
@@ -72,7 +72,7 @@ final class UserDefaultTests: XCTestCase {
     }
 
     func testReset() {
-        let wrapper = UserDefault<Bool>(key: "BoolKey", userDefaults: userDefaults, defaultValue: true)
+        let wrapper = UserDefault<Bool>("BoolKey", store: userDefaults, defaultValue: true)
 
         // When setting the value, it is written to UserDefaults
         wrapper.wrappedValue = false
@@ -86,7 +86,7 @@ final class UserDefaultTests: XCTestCase {
     }
 
     func testObserver() {
-        let wrapper = UserDefault<String>(key: "StringKey", userDefaults: userDefaults, defaultValue: "")
+        let wrapper = UserDefault<String>("StringKey", store: userDefaults, defaultValue: "")
 
         var changes: [UserDefaults.Change<String>] = []
         let observer = wrapper.addObserver { changes.append($0) }

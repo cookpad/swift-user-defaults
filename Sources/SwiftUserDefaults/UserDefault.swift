@@ -72,16 +72,21 @@ public struct UserDefault<Value> {
 
 // MARK: - Initializers
 public extension UserDefault {
-    /// Creates a `UserDefault` property wrapper with support for a default value that is applied in the event of the stored value being `nil`.
+    /// Creates a property that can read and write a user default with a default value.
+    ///
+    /// ```swift
+    /// @UserDefault("UserHasViewedProfile")
+    /// var userHasViewedProfile: Bool = false
+    /// ```
     ///
     /// - Parameters:
-    ///   - key: The key of the value stored within `UserDefaults`.
+    ///   - defaultValue: The default value used when a value is not stored.
+    ///   - key: The key to read and write the value to in the user defaults store.
     ///   - userDefaults: The instance of `UserDefaults` used for storing the value. Defaults to `UserDefaults.standard`.
-    ///   - defaultValue: The default value used when the stored value is `nil`.
     init(
-        key: UserDefaults.Key,
-        userDefaults: UserDefaults = .standard,
-        defaultValue: Value
+        wrappedValue defaultValue: Value,
+        _ key: UserDefaults.Key,
+        store userDefaults: UserDefaults = .standard
     ) where Value: UserDefaultsStorable {
         self.init(
             key: key,
@@ -90,17 +95,47 @@ public extension UserDefault {
             valueDecoder: { $0.flatMap(Value.init(storedValue:)) ?? defaultValue }
         )
     }
+
+    /// Creates a property that can read and write a user default with a default value.
+    ///
+    /// This initialiser is more suitable when creating a property wrapper using injected values:
+    ///
+    /// ```swift
+    /// @UserDefault
+    /// var userHasViewedProfile: Bool
+    ///
+    /// init(userDefaults: UserDefaults) {
+    ///     _userHasViewedProfile = UserDefault("UserHasViewedProfile", store: userDefaults, defaultValue: false)
+    /// }
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - key: The key to read and write the value to in the user defaults store.
+    ///   - userDefaults: The instance of `UserDefaults` used for storing the value. Defaults to `UserDefaults.standard`.
+    ///   - defaultValue: The default value used when a value is not stored.
+    init(
+        _ key: UserDefaults.Key,
+        store userDefaults: UserDefaults = .standard,
+        defaultValue: Value
+    ) where Value: UserDefaultsStorable {
+        self.init(wrappedValue: defaultValue, key, store: userDefaults)
+    }
 }
 
 public extension UserDefault where Value: ExpressibleByNilLiteral {
-    /// Creates a `UserDefault` property wrapper.
+    /// Creates a property that can read and write an Optional user default.
+    ///
+    /// ```swift
+    /// @UserDefault("UserName")
+    /// var userName: String?
+    /// ```
     ///
     /// - Parameters:
-    ///   - key: The key of the value stored within `UserDefaults`.
+    ///   - key: The key to read and write the value to in the user defaults store.
     ///   - userDefaults: The instance of `UserDefaults` used for storing the value. Defaults to `UserDefaults.standard`.
     init<T: UserDefaultsStorable>(
-        key: UserDefaults.Key,
-        userDefaults: UserDefaults = .standard
+        _ key: UserDefaults.Key,
+        store userDefaults: UserDefaults = .standard
     ) where Value == T? {
         self.init(
             key: key,
