@@ -90,7 +90,9 @@ public extension UserDefault {
             valueDecoder: { $0.flatMap(Value.init(storedValue:)) ?? defaultValue }
         )
     }
+}
 
+public extension UserDefault where Value: ExpressibleByNilLiteral {
     /// Creates a `UserDefault` property wrapper.
     ///
     /// - Parameters:
