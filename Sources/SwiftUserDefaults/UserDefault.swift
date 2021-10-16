@@ -25,28 +25,17 @@ import Foundation
 /// A property wrapper that uses an instance of `UserDefaults` for the storage mechanism.
 @propertyWrapper
 public struct UserDefault<Value> {
-    /// The key used for storing the wrapped value in `UserDefaults`.
-    public let key: UserDefaults.Key
-
-    /// The instance of `UserDefaults` used for storing the wrapped value.
-    public let userDefaults: UserDefaults
-
-    /// A closure used for encoding the wrapped value into a representation suitable for `UserDefaults`.
-    let valueEncoder: (Value) -> Any?
-
-    /// A closure used for decoding the representation stored in `UserDefaults` into the wrapped value type.
-    let valueDecoder: (Any?) -> Value
+    let getValue: () -> Value
+    let setValue: (Value) -> Void
+    let resetValue: () -> Void
+    let observeValue: (@escaping (UserDefaults.Change<Value>) -> Void) -> UserDefaults.Observation
 
     public var wrappedValue: Value {
         get {
-            valueDecoder(userDefaults.value(forKey: key.rawValue))
+            getValue()
         }
         nonmutating set {
-            if let value = valueEncoder(newValue) {
-                userDefaults.set(value, forKey: key.rawValue)
-            } else {
-                reset()
-            }
+            setValue(newValue)
         }
     }
 
@@ -56,7 +45,7 @@ public struct UserDefault<Value> {
 
     /// Removes any previously stored value from `UserDefaults` resetting the wrapped value to either `nil` or its default value.
     public func reset() {
-        userDefaults.removeObject(forKey: key.rawValue)
+        resetValue()
     }
 
     /// Observes changes to the specified user default in the underlying database.
@@ -64,9 +53,7 @@ public struct UserDefault<Value> {
     /// - Parameter handler: A closure invoked whenever the observed value is modified.
     /// - Returns: A token object to be used to invalidate the observation by either deallocating the value or calling `invalidate()`.
     public func addObserver(handler: @escaping (UserDefaults.Change<Value>) -> Void) -> UserDefaults.Observation {
-        userDefaults.observeObject(forKey: key.rawValue) { change in
-            handler(change.map({ valueDecoder($0) }))
-        }
+        observeValue(handler)
     }
 }
 
@@ -89,10 +76,20 @@ public extension UserDefault {
         store userDefaults: UserDefaults = .standard
     ) where Value: UserDefaultsStorable {
         self.init(
-            key: key,
-            userDefaults: userDefaults,
-            valueEncoder: { $0.storableValue },
-            valueDecoder: { $0.flatMap({ UserDefaultsDecoder.decode(from: $0, context: key) }) ?? defaultValue }
+            getValue: {
+                userDefaults.x.object(forKey: key) ?? defaultValue
+            },
+            setValue: { value in
+                userDefaults.x.set(value, forKey: key)
+            },
+            resetValue: {
+                userDefaults.x.removeObject(forKey: key)
+            },
+            observeValue: { handler in
+                userDefaults.x.observeObject(forKey: key, as: Value.self) { change in
+                    handler(change.map({ $0 ?? defaultValue }))
+                }
+            }
         )
     }
 
@@ -138,10 +135,22 @@ public extension UserDefault where Value: ExpressibleByNilLiteral {
         store userDefaults: UserDefaults = .standard
     ) where Value == T? {
         self.init(
-            key: key,
-            userDefaults: userDefaults,
-            valueEncoder: { $0?.storableValue },
-            valueDecoder: { $0.flatMap({ UserDefaultsDecoder.decode(from: $0, context: key) }) }
+            getValue: {
+                userDefaults.x.object(forKey: key)
+            },
+            setValue: { value in
+                if let value = value {
+                    userDefaults.x.set(value, forKey: key)
+                } else {
+                    userDefaults.x.removeObject(forKey: key)
+                }
+            },
+            resetValue: {
+                userDefaults.x.removeObject(forKey: key)
+            },
+            observeValue: { handler in
+                userDefaults.x.observeObject(forKey: key, handler: handler)
+            }
         )
     }
 }
