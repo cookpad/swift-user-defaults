@@ -71,6 +71,6 @@ final class UserDefaultsXTests: XCTestCase {
         XCTAssertNil(value)
 
         // And log message is sent:
-        // [UserDefaultsDecoder] Unable to decode 'NumberAsString' as Int when stored object was NSTaggedPointerString
+        // [UserDefaults.X] Unable to decode 'NumberAsString' as Int when stored object was NSTaggedPointerString
     }
 }

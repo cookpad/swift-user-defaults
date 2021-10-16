@@ -64,7 +64,7 @@ public extension UserDefaults.X {
     /// - Parameter key: A key in the user‘s defaults database.
     /// - Returns: The object associated with the specified key, or `nil` if the key was not found or if the value did not match the generic type `T`.
     func object<T: UserDefaultsStorable>(forKey key: UserDefaults.Key) -> T? {
-        base.object(forKey: key.rawValue).flatMap({ UserDefaultsDecoder.decode(from: $0, context: key) })
+        base.object(forKey: key.rawValue).flatMap({ decode(from: $0, context: key) })
     }
 
     /// Returns the object associated with the specified key.
@@ -86,7 +86,7 @@ public extension UserDefaults.X {
         handler: @escaping (UserDefaults.Change<T?>) -> Void
     ) -> UserDefaults.Observation {
         base.observeObject(forKey: key.rawValue) { change in
-            handler(change.map({ $0.flatMap({ UserDefaultsDecoder.decode(from: $0, context: key) }) }))
+            handler(change.map({ $0.flatMap({ decode(from: $0, context: key) }) }))
         }
     }
 
@@ -102,5 +102,37 @@ public extension UserDefaults.X {
         handler: @escaping (UserDefaults.Change<T?>) -> Void
     ) -> UserDefaults.Observation {
         observeObject(forKey: key, handler: handler)
+    }
+}
+
+// MARK: - Internal
+import os.log
+
+extension UserDefaults.X {
+    static let log: OSLog = OSLog(
+        subsystem: "eu.liamnichols.swift-user-defaults",
+        category: "UserDefaults.X"
+    )
+
+    func decode<Value: UserDefaultsStorable>(
+        from storedValue: Any,
+        context key: UserDefaults.Key
+    ) -> Value? {
+        // If the value can be decoded successfully, simply return it
+        if let decoded = Value(storedValue: storedValue) {
+            return decoded
+        }
+
+        // If the value wasn't decoded, log a message for debugging
+        os_log(
+            "Unable to decode '%@' as %{public}@ when stored object was %{public}@",
+            log: Self.log,
+            type: .info,
+            key.rawValue,
+            String(describing: Value.self),
+            String(describing: type(of: storedValue))
+        )
+
+        return nil
     }
 }
