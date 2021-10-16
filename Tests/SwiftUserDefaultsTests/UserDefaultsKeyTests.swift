@@ -25,9 +25,6 @@ import XCTest
 
 final class UserDefaultsKeyTests: XCTestCase {
     func testKey() {
-        let stringLiteral: UserDefaults.Key = "StringLiteral"
-        XCTAssertEqual(stringLiteral.rawValue, "StringLiteral")
-
         let string = UserDefaults.Key("String")
         XCTAssertEqual(string.rawValue, "String")
 

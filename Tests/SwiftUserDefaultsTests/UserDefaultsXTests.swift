@@ -65,7 +65,7 @@ final class UserDefaultsXTests: XCTestCase {
         userDefaults.set("0", forKey: "NumberAsString")
 
         // And we try to cast to Int
-        let value = userDefaults.x.object(forKey: "NumberAsString", as: Int.self)
+        let value = userDefaults.x.object(forKey: .init("NumberAsString"), as: Int.self)
 
         // Returned value is `nil`
         XCTAssertNil(value)

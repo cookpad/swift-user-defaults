@@ -52,7 +52,7 @@ public extension UserDefaults {
     /// }
     ///
     /// class ViewController: UIViewController {
-    ///     @UserDefault(key: .userState, defaultValue: .idle)
+    ///     @UserDefault(.userState, defaultValue: .idle)
     ///     var userState: UserState
     /// }
     /// ```
@@ -63,11 +63,9 @@ public extension UserDefaults {
     /// import Foundation
     /// import SwiftUserDefaults
     ///
-    /// UserDefaults.standard.register(defaults: [
-    ///     UserDefaults.Key.userState.rawValue: "onboarding"
-    /// ])
+    /// let rawValue = UserDefaults.standard.string(forKey: UserDefaults.Key.userState.rawValue)
     /// ```
-    struct Key: RawRepresentable, Hashable, ExpressibleByStringLiteral {
+    struct Key: RawRepresentable, Hashable {
         /// The underlying string value that is used for assigning a value against within the user defaults.
         public let rawValue: String
 
@@ -75,8 +73,8 @@ public extension UserDefaults {
             self.rawValue = rawValue
         }
 
-        public init(stringLiteral value: StringLiteralType) {
-            self.rawValue = value
+        public init(_ rawValue: String) {
+            self.rawValue = rawValue
         }
     }
 }

@@ -33,7 +33,7 @@ final class UserDefaultTests: XCTestCase {
     }
 
     func testUserDefaultsStorableType() {
-        let wrapper = UserDefault<String>("StringKey", store: userDefaults, defaultValue: "")
+        let wrapper = UserDefault<String>(.init("StringKey"), store: userDefaults, defaultValue: "")
 
         // When UserDefaults does not have a value, the default value is used
         XCTAssertNil(userDefaults.object(forKey: "StringKey"))
@@ -50,7 +50,7 @@ final class UserDefaultTests: XCTestCase {
     }
 
     func testOptionalUserDefaultsStorableType() {
-        let wrapper = UserDefault<Int?>("IntegerKey", store: userDefaults)
+        let wrapper = UserDefault<Int?>(.init("IntegerKey"), store: userDefaults)
 
         // When UserDefaults does not have a value, the default value is nil
         XCTAssertNil(userDefaults.object(forKey: "IntegerKey"))
@@ -72,7 +72,7 @@ final class UserDefaultTests: XCTestCase {
     }
 
     func testReset() {
-        let wrapper = UserDefault<Bool>("BoolKey", store: userDefaults, defaultValue: true)
+        let wrapper = UserDefault<Bool>(.init("BoolKey"), store: userDefaults, defaultValue: true)
 
         // When setting the value, it is written to UserDefaults
         wrapper.wrappedValue = false
@@ -86,7 +86,7 @@ final class UserDefaultTests: XCTestCase {
     }
 
     func testObserver() {
-        let wrapper = UserDefault<String>("StringKey", store: userDefaults, defaultValue: "")
+        let wrapper = UserDefault<String>(.init("StringKey"), store: userDefaults, defaultValue: "")
 
         var changes: [UserDefaults.Change<String>] = []
         let observer = wrapper.addObserver { changes.append($0) }
@@ -95,7 +95,7 @@ final class UserDefaultTests: XCTestCase {
         wrapper.wrappedValue = "One"
         wrapper.reset()
         wrapper.wrappedValue = "Two"
-        userDefaults.x.set("Three", forKey: "StringKey")
+        userDefaults.x.set("Three", forKey: .init("StringKey"))
 
         XCTAssertEqual(changes, [.initial(""), .update("One"), .update(""), .update("Two"), .update("Three")])
     }
