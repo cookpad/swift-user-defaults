@@ -95,7 +95,7 @@ final class UserDefaultTests: XCTestCase {
         wrapper.wrappedValue = "One"
         wrapper.reset()
         wrapper.wrappedValue = "Two"
-        userDefaults.set("Three", for: "StringKey")
+        userDefaults.x.set("Three", forKey: "StringKey")
 
         XCTAssertEqual(changes, [.initial(""), .update("One"), .update(""), .update("Two"), .update("Three")])
     }

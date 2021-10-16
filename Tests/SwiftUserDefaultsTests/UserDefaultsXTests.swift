@@ -27,7 +27,7 @@ private extension UserDefaults.Key {
     static let rawSubject = Self("RawSubject")
 }
 
-final class UserDefaultsConvenienceTests: XCTestCase {
+final class UserDefaultsXTests: XCTestCase {
     var userDefaults: UserDefaults!
 
     override func setUp() {
@@ -39,22 +39,22 @@ final class UserDefaultsConvenienceTests: XCTestCase {
     func testConvenienceMethods() {
         // Observer is registered
         var changes: [UserDefaults.Change<RawSubject?>] = []
-        let observer = userDefaults.observeObject(for: .rawSubject, as: RawSubject.self) { change in
+        let observer = userDefaults.x.observeObject(forKey: .rawSubject, as: RawSubject.self) { change in
             changes.append(change)
         }
 
         // Initial value should read nil
-        let initialValue = userDefaults.object(for: .rawSubject, as: RawSubject.self)
+        let initialValue = userDefaults.x.object(forKey: .rawSubject, as: RawSubject.self)
         XCTAssertNil(initialValue)
 
         // Mutations should be recorded
-        userDefaults.set(RawSubject.baz, for: .rawSubject)
-        userDefaults.removeObject(for: .rawSubject)
-        userDefaults.register(defaults: [.rawSubject: RawSubject.bar])
+        userDefaults.x.set(RawSubject.baz, forKey: .rawSubject)
+        userDefaults.x.removeObject(forKey: .rawSubject)
+        userDefaults.x.register(defaults: [.rawSubject: RawSubject.bar])
         observer.invalidate()
 
         // Updated value should be read
-        XCTAssertEqual(userDefaults.object(for: .rawSubject), RawSubject.bar)
+        XCTAssertEqual(userDefaults.x.object(forKey: .rawSubject), RawSubject.bar)
 
         // Changes should have been observed
         XCTAssertEqual(changes, [.initial(nil), .update(.baz), .update(nil), .update(.bar)])
@@ -65,7 +65,7 @@ final class UserDefaultsConvenienceTests: XCTestCase {
         userDefaults.set("0", forKey: "NumberAsString")
 
         // And we try to cast to Int
-        let value = userDefaults.object(for: "NumberAsString", as: Int.self)
+        let value = userDefaults.x.object(forKey: "NumberAsString", as: Int.self)
 
         // Returned value is `nil`
         XCTAssertNil(value)
