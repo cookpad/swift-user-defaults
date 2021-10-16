@@ -62,7 +62,7 @@ public extension UserDefault {
     /// Creates a property that can read and write a user default with a default value.
     ///
     /// ```swift
-    /// @UserDefault("UserHasViewedProfile")
+    /// @UserDefault(.userHasViewedProfile)
     /// var userHasViewedProfile: Bool = false
     /// ```
     ///
@@ -102,7 +102,7 @@ public extension UserDefault {
     /// var userHasViewedProfile: Bool
     ///
     /// init(userDefaults: UserDefaults) {
-    ///     _userHasViewedProfile = UserDefault("UserHasViewedProfile", store: userDefaults, defaultValue: false)
+    ///     _userHasViewedProfile = UserDefault(.userHasViewedProfile, store: userDefaults, defaultValue: false)
     /// }
     /// ```
     ///
@@ -123,7 +123,7 @@ public extension UserDefault where Value: ExpressibleByNilLiteral {
     /// Creates a property that can read and write an Optional user default.
     ///
     /// ```swift
-    /// @UserDefault("UserName")
+    /// @UserDefault(.userName)
     /// var userName: String?
     /// ```
     ///
