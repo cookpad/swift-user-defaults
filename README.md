@@ -92,7 +92,7 @@ extension UserDefaults.Key {
 let store = UserDefaults.standard
 
 // MARK: - Default Values
-store.register(defaults: [
+store.x.register(defaults: [
     .currentLevel: 1
 ])
 
@@ -100,26 +100,26 @@ store.register(defaults: [
 let name: String = ...
 let guid: UUID = ...
 
-store.set(name, for: .userName)
-store.set(guid.stringValue, for: .userGUID)
+store.x.set(name, forKey: .userName)
+store.x.set(guid.stringValue, forKey: .userGUID)
 
-store.set(guid, for: .userGUID)
-       // ^^^^ Argument type 'UUID' does not conform to expected
-       //      type 'UserDefaultsStorable'
+store.x.set(guid, forKey: .userGUID)
+         // ^^^^ Argument type 'UUID' does not conform to expected
+         //      type 'UserDefaultsStorable'
 
 // MARK: - Removing Values
-store.removeObject(for: .userName)
+store.x.removeObject(forKey: .userName)
 
 // MARK: - Reading Values
 func userName() -> String? {
-    return store.object(for: .userName) // type inferred from context
+    return store.x.object(forKey: .userName) // type inferred from context
 }
 
-let currentLevel = store.object(for: .currentLevel, as: Int.self)
+let currentLevel = store.x.object(forKey: .currentLevel, as: Int.self)
 currentLevel // Int?, 1
 
 // MARK: - Observing
-let observer = store.observeObject(for: .userName, as: String.self) { change
+let observer = store.x.observeObject(forKey: .userName, as: String.self) { change
     change // UserDefaults.Change<String?>
 
     switch change {
