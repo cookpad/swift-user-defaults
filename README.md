@@ -115,11 +115,11 @@ func userName() -> String? {
     return store.x.object(forKey: .userName) // type inferred from context
 }
 
-let currentLevel = store.x.object(forKey: .currentLevel, as: Int.self)
+let currentLevel = store.x.object(Int.self, forKey: .currentLevel)
 currentLevel // Int?, 1
 
 // MARK: - Observing
-let observer = store.x.observeObject(forKey: .userName, as: String.self) { change
+let observer = store.x.observeObject(String.self, forKey: .userName) { change
     change // UserDefaults.Change<String?>
 
     switch change {
@@ -187,9 +187,9 @@ class ViewController: UIViewController {
         super.viewDidLoad()
 
         let store = UserDefaults.standard
-        store.object(for: .currentLevel, as: Int.self) // 8
-        store.object(for: .userName, as: String.self) // "John Doe"
-        store.object(for: .userGUID, as: String.self) // "FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF"
+        store.object(Int.self, for: .currentLevel) // 8
+        store.object(String.self, for: .userName) // "John Doe"
+        store.object(String.self, for: .userGUID) // "FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF"
     }
 }
 ```

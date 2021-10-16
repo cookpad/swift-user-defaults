@@ -86,7 +86,7 @@ public extension UserDefault {
                 userDefaults.x.removeObject(forKey: key)
             },
             observeValue: { handler in
-                userDefaults.x.observeObject(forKey: key, as: Value.self) { change in
+                userDefaults.x.observeObject(Value.self, forKey: key) { change in
                     handler(change.map({ $0 ?? defaultValue }))
                 }
             }

@@ -39,12 +39,12 @@ final class UserDefaultsXTests: XCTestCase {
     func testConvenienceMethods() {
         // Observer is registered
         var changes: [UserDefaults.Change<RawSubject?>] = []
-        let observer = userDefaults.x.observeObject(forKey: .rawSubject, as: RawSubject.self) { change in
+        let observer = userDefaults.x.observeObject(RawSubject.self, forKey: .rawSubject) { change in
             changes.append(change)
         }
 
         // Initial value should read nil
-        let initialValue = userDefaults.x.object(forKey: .rawSubject, as: RawSubject.self)
+        let initialValue = userDefaults.x.object(RawSubject.self, forKey: .rawSubject)
         XCTAssertNil(initialValue)
 
         // Mutations should be recorded
@@ -65,7 +65,7 @@ final class UserDefaultsXTests: XCTestCase {
         userDefaults.set("0", forKey: "NumberAsString")
 
         // And we try to cast to Int
-        let value = userDefaults.x.object(forKey: .init("NumberAsString"), as: Int.self)
+        let value = userDefaults.x.object(Int.self, forKey: .init("NumberAsString"))
 
         // Returned value is `nil`
         XCTAssertNil(value)

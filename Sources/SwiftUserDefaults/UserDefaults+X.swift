@@ -63,16 +63,8 @@ public extension UserDefaults.X {
     ///
     /// - Parameter key: A key in the user‘s defaults database.
     /// - Returns: The object associated with the specified key, or `nil` if the key was not found or if the value did not match the generic type `T`.
-    func object<T: UserDefaultsStorable>(forKey key: UserDefaults.Key) -> T? {
+    func object<T: UserDefaultsStorable>(_ type: T.Type = T.self, forKey key: UserDefaults.Key) -> T? {
         base.object(forKey: key.rawValue).flatMap({ decode(from: $0, context: key) })
-    }
-
-    /// Returns the object associated with the specified key.
-    ///
-    /// - Parameter key: A key in the user‘s defaults database.
-    /// - Returns: The object associated with the specified key, or `nil` if the key was not found or if the value did not match the generic type `T`.
-    func object<T: UserDefaultsStorable>(forKey key: UserDefaults.Key, as _: T.Type) -> T? {
-        object(forKey: key)
     }
 
     /// Observes changes to the object associated with the specified key.
@@ -82,26 +74,13 @@ public extension UserDefaults.X {
     ///   - handler: A closure invoked whenever the observed value is modified.
     /// - Returns: A token object to be used to invalidate the observation by either deallocating the value or calling `invalidate()`.
     func observeObject<T: UserDefaultsStorable>(
+        _ type: T.Type = T.self,
         forKey key: UserDefaults.Key,
         handler: @escaping (UserDefaults.Change<T?>) -> Void
     ) -> UserDefaults.Observation {
         base.observeObject(forKey: key.rawValue) { change in
             handler(change.map({ $0.flatMap({ decode(from: $0, context: key) }) }))
         }
-    }
-
-    /// Observes changes to the object associated with the specified key.
-    ///
-    /// - Parameters:
-    ///   - key: A key in the user‘s defaults database.
-    ///   - handler: A closure invoked whenever the observed value is modified.
-    /// - Returns: A token object to be used to invalidate the observation by either deallocating the value or calling `invalidate()`.
-    func observeObject<T: UserDefaultsStorable>(
-        forKey key: UserDefaults.Key,
-        as _: T.Type,
-        handler: @escaping (UserDefaults.Change<T?>) -> Void
-    ) -> UserDefaults.Observation {
-        observeObject(forKey: key, handler: handler)
     }
 }
 
