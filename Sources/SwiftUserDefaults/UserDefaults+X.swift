@@ -70,6 +70,16 @@ public extension UserDefaults.X {
         base.object(forKey: key.rawValue).flatMap({ decode(from: $0, context: key) })
     }
 
+    /// Returns the object associated with the specified key.
+    ///
+    /// - Parameters:
+    ///   - type: The type of the value to return.
+    ///   - key: A key in the user‘s defaults database.
+    /// - Returns: The object associated with the specified key, or `nil` if the key was not found or if the value was not stored in a format that was compatible with `T.RawValue`.
+    func object<T: RawRepresentable>(_ type: T.Type = T.self, forKey key: UserDefaults.Key) -> T? where T.RawValue: UserDefaultsStorable {
+        object(forKey: key).flatMap({ T.init(rawValue: $0) })
+    }
+
     /// Returns the object associated with the specific key after attempting to deserialise a data blob using the provided strategy.
     ///
     /// If an error occurs trying to decode the data into the given type, or if a value is not stored against the given key, `nil` will be returned.
@@ -92,6 +102,15 @@ public extension UserDefaults.X {
     ///   - key: The key with which to associate the value.
     func set(_ value: UserDefaultsStorable, forKey key: UserDefaults.Key) {
         base.set(value.storableValue, forKey: key.rawValue)
+    }
+
+    /// Sets the value of the specified default key.
+    ///
+    /// - Parameters:
+    ///   - value: The object of which the `rawValue` should be stored in the defaults database.
+    ///   - key: The key with which to associate the value.
+    func set<T: RawRepresentable>(_ value: T, forKey key: UserDefaults.Key) where T.RawValue: UserDefaultsStorable {
+        set(value.rawValue, forKey: key)
     }
 
     /// Sets the value of the specified default key.
@@ -129,7 +148,7 @@ public extension UserDefaults.X {
     /// Observes changes to the object associated with the specified key.
     ///
     /// - Parameters:
-    ///   - type: The type of the value to decode.
+    ///   - type: The type of the value to observe.
     ///   - key: A key in the user‘s defaults database.
     ///   - handler: A closure invoked whenever the observed value is modified.
     /// - Returns: A token object to be used to invalidate the observation by either deallocating the value or calling `invalidate()`.
@@ -143,13 +162,30 @@ public extension UserDefaults.X {
         }
     }
 
+    /// Observes changes to the object associated with the specified key.
+    ///
+    /// - Parameters:
+    ///   - type: The type of the value to observe.
+    ///   - key: A key in the user‘s defaults database.
+    ///   - handler: A closure invoked whenever the observed value is modified.
+    /// - Returns: A token object to be used to invalidate the observation by either deallocating the value or calling `invalidate()`.
+    func observeObject<T: RawRepresentable>(
+        _ type: T.Type = T.self,
+        forKey key: UserDefaults.Key,
+        handler: @escaping (UserDefaults.Change<T?>) -> Void
+    ) -> UserDefaults.Observation where T.RawValue: UserDefaultsStorable {
+        observeObject(T.RawValue.self, forKey: key) { change in
+            handler(change.map({ $0.flatMap(T.init(rawValue:)) }))
+        }
+    }
+
     /// Observes changes to the data associated with the specified key and decodes it into the given type.
     ///
     /// Even when using a custom coding strategy, types are stored in the underlying `UserDefaults` instance as `Data`.
     /// If an error occurs trying to decode the data into the given type, the value will be returned as `nil`.
     ///
     /// - Parameters:
-    ///   - type: The type of the value to decode.
+    ///   - type: The type of the value to observe.
     ///   - key: A key in the user‘s defaults database.
     ///   - strategy: The strategy used when decoding the stored data.
     ///   - handler: A closure invoked whenever the observed value is modified.

@@ -89,13 +89,6 @@ final class StorableXMLValueTests: XCTestCase {
 
         assertValueMatchesPlist("<Hello & Goodbye>")
     }
-
-    func testXMLString_rawRepresentable() {
-        let xmlString = "<array><string>foo</string><string>bar</string><string>baz</string></array>"
-
-        XCTAssertEqual([RawSubject.foo, .bar, .baz].storableXMLValue, xmlString)
-        XCTAssertEqual(["foo", "bar", "baz"].storableXMLValue, xmlString)
-    }
 }
 
 // MARK: - Utilities

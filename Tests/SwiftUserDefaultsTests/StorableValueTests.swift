@@ -23,7 +23,7 @@
 import SwiftUserDefaults
 import XCTest
 
-enum RawSubject: String, UserDefaultsStorable {
+enum RawSubject: String {
     case foo, bar, baz
 }
 
@@ -184,37 +184,5 @@ final class StorableValueTests: XCTestCase {
         XCTAssertEqual(substringValue.storableValue as? NSString, nsStringValue)
 
         XCTAssertNil(String(storedValue: NSObject()))
-    }
-
-    // MARK: - Raw Representable
-
-    func testRawRepresentable() {
-        let subjectValue = RawSubject.foo
-        let rawValue = "foo"
-        let nsStringValue: NSString = "foo"
-
-        XCTAssertEqual(RawSubject(storedValue: rawValue), .foo)
-        XCTAssertEqual(RawSubject(storedValue: nsStringValue), .foo)
-
-        XCTAssertEqual(subjectValue.storableValue as? NSString, nsStringValue)
-
-        XCTAssertNil(RawSubject(storedValue: 1))
-        XCTAssertNil(RawSubject(storedValue: ""))
-    }
-
-    func testRawRepresentableInArray() {
-        let stringArray = ["foo", "bar", "baz"]
-        XCTAssertEqual(Array<RawSubject>(storedValue: stringArray), [.foo, .bar, .baz])
-
-        let subjectArray: [RawSubject] = [.baz, .bar, .foo]
-        XCTAssertEqual(subjectArray.storableValue as? NSArray, ["baz", "bar", "foo"])
-    }
-
-    func testRawRepresentableInDictionary() {
-        let stringDictionary = ["A": "foo", "B": "bar", "C": "baz"]
-        XCTAssertEqual(Dictionary<String, RawSubject>(storedValue: stringDictionary), ["A": .foo, "B": .bar, "C": .baz])
-
-        let subjectDictionary: [String: RawSubject] = ["A": .baz, "B": .bar, "C": .foo]
-        XCTAssertEqual(subjectDictionary.storableValue as? NSDictionary, ["A": "baz", "B": "bar", "C": "foo"])
     }
 }

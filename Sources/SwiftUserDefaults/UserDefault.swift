@@ -93,6 +93,44 @@ public extension UserDefault {
         )
     }
 
+    /// Creates a property that can read and write a user default with a default value.
+    ///
+    /// ```swift
+    /// enum State: String {
+    ///     case unregistered, registered
+    /// }
+    ///
+    /// @UserDefault(.state)
+    /// var state: State = .unregistered
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - defaultValue: The default value used when a value is not stored.
+    ///   - key: The key to read and write the value to in the user defaults store.
+    ///   - userDefaults: The instance of `UserDefaults` used for storing the value. Defaults to `UserDefaults.standard`.
+    init(
+        wrappedValue defaultValue: Value,
+        _ key: UserDefaults.Key,
+        store userDefaults: UserDefaults = .standard
+    ) where Value: RawRepresentable, Value.RawValue: UserDefaultsStorable {
+        self.init(
+            getValue: {
+                userDefaults.x.object(forKey: key) ?? defaultValue
+            },
+            setValue: { value in
+                userDefaults.x.set(value, forKey: key)
+            },
+            resetValue: {
+                userDefaults.x.removeObject(forKey: key)
+            },
+            observeValue: { handler in
+                userDefaults.x.observeObject(Value.self, forKey: key) { change in
+                    handler(change.map({ $0 ?? defaultValue }))
+                }
+            }
+        )
+    }
+
     /// Creates a property that can read and write a user default using a custom coding strategy.
     ///
     /// In the example below, the `ProfileSummary` type conforms to the `Codable` protocol
@@ -160,6 +198,35 @@ public extension UserDefault {
         self.init(wrappedValue: defaultValue, key, store: userDefaults)
     }
 
+    /// Creates a property that can read and write a user default with a default value.
+    ///
+    /// This initialiser is more suitable when creating a property wrapper using injected values:
+    ///
+    /// ```swift
+    /// enum State: String {
+    ///     case unregistered, registered
+    /// }
+    ///
+    /// @UserDefault
+    /// var state: State
+    ///
+    /// init(userDefaults: UserDefaults) {
+    ///     _state = UserDefault(.state, store: userDefaults, defaultValue: .unregistered)
+    /// }
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - key: The key to read and write the value to in the user defaults store.
+    ///   - userDefaults: The instance of `UserDefaults` used for storing the value. Defaults to `UserDefaults.standard`.
+    ///   - defaultValue: The default value used when a value is not stored.
+    init(
+        _ key: UserDefaults.Key,
+        store userDefaults: UserDefaults = .standard,
+        defaultValue: Value
+    ) where Value: RawRepresentable, Value.RawValue: UserDefaultsStorable {
+        self.init(wrappedValue: defaultValue, key, store: userDefaults)
+    }
+
     /// Creates a property that can read and write a user default using a custom coding strategy.
     ///
     /// In the example below, the `ProfileSummary` type conforms to the `Codable` protocol
@@ -205,6 +272,48 @@ public extension UserDefault where Value: ExpressibleByNilLiteral {
         _ key: UserDefaults.Key,
         store userDefaults: UserDefaults = .standard
     ) where Value == T? {
+        self.init(
+            getValue: {
+                userDefaults.x.object(forKey: key)
+            },
+            setValue: { value in
+                if let value = value {
+                    userDefaults.x.set(value, forKey: key)
+                } else {
+                    userDefaults.x.removeObject(forKey: key)
+                }
+            },
+            resetValue: {
+                userDefaults.x.removeObject(forKey: key)
+            },
+            observeValue: { handler in
+                userDefaults.x.observeObject(forKey: key, handler: handler)
+            }
+        )
+    }
+
+    /// Creates a property that can read and write an Optional user default.
+    ///
+    /// ```swift
+    /// struct PaymentType: RawRepresentable {
+    ///     let rawValue: String
+    ///
+    ///     init(rawValue: String) {
+    ///         self.rawValue = rawValue
+    ///     }
+    /// }
+    ///
+    /// @UserDefault(.lastPaymentType)
+    /// var lastPaymentType: PaymentType?
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - key: The key to read and write the value to in the user defaults store.
+    ///   - userDefaults: The instance of `UserDefaults` used for storing the value. Defaults to `UserDefaults.standard`.
+    init<T: RawRepresentable>(
+        _ key: UserDefaults.Key,
+        store userDefaults: UserDefaults = .standard
+    ) where T.RawValue: UserDefaultsStorable, Value == T? {
         self.init(
             getValue: {
                 userDefaults.x.object(forKey: key)

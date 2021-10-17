@@ -54,7 +54,7 @@ final class UserDefaultsXTests: XCTestCase {
         // Mutations should be recorded
         userDefaults.x.set(RawSubject.baz, forKey: .rawSubject)
         userDefaults.x.removeObject(forKey: .rawSubject)
-        userDefaults.x.register(defaults: [.rawSubject: RawSubject.bar])
+        userDefaults.x.register(defaults: [.rawSubject: RawSubject.bar.rawValue])
         observer.invalidate()
 
         // Updated value should be read

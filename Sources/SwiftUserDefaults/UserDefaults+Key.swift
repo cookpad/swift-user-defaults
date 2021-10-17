@@ -41,13 +41,13 @@ public extension UserDefaults {
     /// }
     /// ```
     ///
-    /// You can then use your custom defined keys with other API provided by UserDefaultTools:
+    /// You can then use your custom defined keys with other API provided by SwiftUserDefaults:
     ///
     /// ```swift
     /// import SwiftUserDefaults
     /// import UIKit
     ///
-    /// enum UserState: String, UserDefaultsStorable {
+    /// enum UserState: String {
     ///     case idle, onboarding, active
     /// }
     ///

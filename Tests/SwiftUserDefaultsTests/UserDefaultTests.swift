@@ -180,4 +180,80 @@ final class UserDefaultTests: XCTestCase {
             nil
         ])
     }
+
+    func testRawRepresentableWithDefault() {
+        let key = UserDefaults.Key("RawRepresentableKey")
+        let wrapper = UserDefault<RawSubject>(key, store: userDefaults, defaultValue: .foo)
+
+        // Observe changes
+        var changes: [RawSubject] = []
+        let token = wrapper.addObserver(handler: { changes.append($0.value) })
+        addTeardownBlock(token.invalidate)
+
+        // Uses default
+        XCTAssertNil(userDefaults.object(forKey: key.rawValue))
+        XCTAssertEqual(wrapper.wrappedValue, .foo)
+
+        // Writes value
+        wrapper.wrappedValue = .bar
+        XCTAssertEqual(userDefaults.string(forKey: key.rawValue), "bar")
+        XCTAssertEqual(wrapper.wrappedValue, .bar)
+
+        // Resets
+        wrapper.reset()
+        XCTAssertNil(userDefaults.object(forKey: key.rawValue))
+
+        // Uses default for bad data
+        userDefaults.set("unknown", forKey: key.rawValue)
+        XCTAssertEqual(wrapper.wrappedValue, .foo)
+
+        // Notifies changes
+        XCTAssertEqual(changes, [
+            .foo,
+            .bar,
+            .foo,
+            .foo
+        ])
+    }
+
+    func testRawRepresentable() {
+        let key = UserDefaults.Key("RawRepresentableKey")
+        let wrapper = UserDefault<RawSubject?>(key, store: userDefaults)
+
+        // Observe changes
+        var changes: [RawSubject?] = []
+        let token = wrapper.addObserver(handler: { changes.append($0.value) })
+        addTeardownBlock(token.invalidate)
+
+        // Uses default
+        XCTAssertNil(userDefaults.object(forKey: key.rawValue))
+        XCTAssertNil(wrapper.wrappedValue)
+
+        // Writes value
+        wrapper.wrappedValue = .bar
+        XCTAssertEqual(userDefaults.string(forKey: key.rawValue), "bar")
+        XCTAssertEqual(wrapper.wrappedValue, .bar)
+
+        // Resets
+        wrapper.reset()
+        XCTAssertNil(userDefaults.object(forKey: key.rawValue))
+        XCTAssertNil(wrapper.wrappedValue)
+
+        // Uses default for bad data
+        userDefaults.set("unknown", forKey: key.rawValue)
+        XCTAssertNil(wrapper.wrappedValue)
+
+        // Reads raw value
+        userDefaults.set("baz", forKey: key.rawValue)
+        XCTAssertEqual(wrapper.wrappedValue, .baz)
+
+        // Notifies changes
+        XCTAssertEqual(changes, [
+            nil,
+            .bar,
+            nil,
+            nil,
+            .baz
+        ])
+    }
 }
