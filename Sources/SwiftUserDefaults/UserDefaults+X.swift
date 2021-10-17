@@ -41,6 +41,8 @@ public extension UserDefaults.X {
         category: "UserDefaults.X"
     )
 
+    // MARK: Common
+
     /// Adds the contents of the specified dictionary to the registration domain.
     ///
     /// - Parameter defaults: The dictionary of keys and values you want to register.
@@ -55,6 +57,33 @@ public extension UserDefaults.X {
     func removeObject(forKey key: UserDefaults.Key) {
         base.removeObject(forKey: key.rawValue)
     }
+
+    // MARK: Read
+
+    /// Returns the object associated with the specified key.
+    ///
+    /// - Parameters:
+    ///   - type: The type of the value to decode.
+    ///   - key: A key in the user‘s defaults database.
+    /// - Returns: The object associated with the specified key, or `nil` if the key was not found or if the value did not match the generic type `T`.
+    func object<T: UserDefaultsStorable>(_ type: T.Type = T.self, forKey key: UserDefaults.Key) -> T? {
+        base.object(forKey: key.rawValue).flatMap({ decode(from: $0, context: key) })
+    }
+
+    /// Returns the object associated with the specific key after attempting to deserialise a data blob using the provided strategy.
+    ///
+    /// If an error occurs trying to decode the data into the given type, or if a value is not stored against the given key, `nil` will be returned.
+    ///
+    /// - Parameters:
+    ///   - type: The type of the value to decode.
+    ///   - key: A key in the user‘s defaults database.
+    ///   - strategy: The custom coding strategy used when decoding the stored data.
+    /// - Returns: The deserialised object conforming to the `Decodable` protocol.
+    func object<T: Decodable>(_ type: T.Type = T.self, forKey key: UserDefaults.Key, strategy: UserDefaults.CodingStrategy) -> T? {
+        base.object(forKey: key.rawValue).flatMap({ decode(from: $0, strategy: strategy, context: key) })
+    }
+
+    // MARK: Write
 
     /// Sets the value of the specified default key.
     ///
@@ -95,28 +124,7 @@ public extension UserDefaults.X {
         }
     }
 
-    /// Returns the object associated with the specified key.
-    ///
-    /// - Parameters:
-    ///   - type: The type of the value to decode.
-    ///   - key: A key in the user‘s defaults database.
-    /// - Returns: The object associated with the specified key, or `nil` if the key was not found or if the value did not match the generic type `T`.
-    func object<T: UserDefaultsStorable>(_ type: T.Type = T.self, forKey key: UserDefaults.Key) -> T? {
-        base.object(forKey: key.rawValue).flatMap({ decode(from: $0, context: key) })
-    }
-
-    /// Returns the object associated with the specific key after attempting to deserialise a data blob using the provided strategy.
-    ///
-    /// If an error occurs trying to decode the data into the given type, or if a value is not stored against the given key, `nil` will be returned.
-    ///
-    /// - Parameters:
-    ///   - type: The type of the value to decode.
-    ///   - key: A key in the user‘s defaults database.
-    ///   - strategy: The custom coding strategy used when decoding the stored data.
-    /// - Returns: The deserialised object conforming to the `Decodable` protocol.
-    func object<T: Decodable>(_ type: T.Type = T.self, forKey key: UserDefaults.Key, strategy: UserDefaults.CodingStrategy) -> T? {
-        base.object(forKey: key.rawValue).flatMap({ decode(from: $0, strategy: strategy, context: key) })
-    }
+    // MARK: Observe
 
     /// Observes changes to the object associated with the specified key.
     ///
