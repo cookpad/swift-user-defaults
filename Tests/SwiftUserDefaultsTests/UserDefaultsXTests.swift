@@ -23,6 +23,10 @@
 import SwiftUserDefaults
 import XCTest
 
+private struct Subject: Codable, Equatable {
+    let value: String
+}
+
 private extension UserDefaults.Key {
     static let rawSubject = Self("RawSubject")
 }
@@ -72,5 +76,106 @@ final class UserDefaultsXTests: XCTestCase {
 
         // And log message is sent:
         // [UserDefaults.X] Unable to decode 'NumberAsString' as Int when stored object was NSTaggedPointerString
+    }
+
+    func testCodable_setJSON() throws {
+        let subject = Subject(value: "something")
+        let key = UserDefaults.Key("Key")
+
+        // When the subject is set with the JSON strategy
+        userDefaults.x.set(subject, forKey: key, strategy: .json)
+
+        // The raw data is compact JSON
+        let data = try XCTUnwrap(userDefaults.data(forKey: key.rawValue))
+        XCTAssertEqual(data, Data(#"{"value":"something"}"#.utf8))
+    }
+
+    func testCodable_getJSON() throws {
+        let key = UserDefaults.Key("Key")
+
+        // Given JSON data exists in UserDefaults
+        userDefaults.set(Data(#"{"value":"something else"}"#.utf8), forKey: key.rawValue)
+
+        // Then reading into a Decodable type will parse the JSON
+        let subject = userDefaults.x.object(Subject.self, forKey: key, strategy: .json)
+        XCTAssertEqual(Subject(value: "something else"), subject)
+    }
+
+    func testCodable_plist() throws {
+        let subject = Subject(value: "something")
+        let key = UserDefaults.Key("Key")
+
+        // When the subject is set with the plist strategy
+        userDefaults.x.set(subject, forKey: key, strategy: .plist)
+        XCTAssertNotNil(userDefaults.data(forKey: key.rawValue))
+
+        // Then the subject can be read back
+        XCTAssertEqual(subject, userDefaults.x.object(forKey: key, strategy: .plist))
+    }
+
+    func testCodable_readInvalid() throws {
+        let key = UserDefaults.Key("Key")
+
+        // Given invalid data is written
+        userDefaults.x.set(Data("[]".utf8), forKey: key)
+
+        // When UserDefaults attempts to read as a CodableType
+        let value = userDefaults.x.object(Subject.self, forKey: key, strategy: .json)
+
+        // Then the value will be nil
+        XCTAssertNil(value)
+
+        // And an error will be logged
+        // [UserDefaults.X] Error thrown decoding data for 'Key' using strategy 'json' as Subject: {error}
+    }
+
+    func testCodable_writeInvalid() throws {
+        let key = UserDefaults.Key("Key")
+
+        // Given a value is already written
+        userDefaults.setValue("Test", forKey: key.rawValue)
+
+        // When writing an invalid value
+        userDefaults.x.set("Test", forKey: key, strategy: .plist)
+
+        // Then the value will have been removed due to the failure
+        XCTAssertNil(userDefaults.object(forKey: key.rawValue))
+
+        // And an error will have been logged
+        // [UserDefaults.X] Error thrown encoding data for 'Key' using strategy 'plist': {error}
+        // [UserDefaults.X] Removing data stored for 'Key' after failing to encode new value
+    }
+
+    func testCodableObservation() {
+        let key = UserDefaults.Key("Key")
+
+        // Given changes are being observed
+        var changes: [Subject?] = []
+        let observer = userDefaults.x.observeObject(Subject.self, forKey: key, strategy: .json) { change in
+            changes.append(change.value)
+        }
+
+        // When a sequence of events take place
+        userDefaults.x.set(Subject(value: "one"), forKey: key, strategy: .json)
+        userDefaults.x.set(Subject(value: "two"), forKey: key, strategy: .json)
+        userDefaults.x.set(Subject(value: "three"), forKey: key, strategy: .plist)
+        userDefaults.x.set(Subject(value: "four"), forKey: key, strategy: .json)
+        userDefaults.set("five", forKey: key.rawValue)
+        userDefaults.set(Data(#"{"value":"six"}"#.utf8), forKey: key.rawValue)
+        userDefaults.x.removeObject(forKey: key)
+        observer.invalidate()
+        userDefaults.x.set(Subject(value: "seven"), forKey: key, strategy: .json)
+
+        // Then the correct values will have been observed
+        XCTAssertEqual(changes, [
+            nil, // initial
+            Subject(value: "one"),
+            Subject(value: "two"),
+            nil, // plist
+            Subject(value: "four"),
+            nil, // string
+            Subject(value: "six"), // manual
+            nil, // remove
+        ])
     }
 }
