@@ -57,7 +57,7 @@ public struct UserDefault<Value> {
     }
 }
 
-// MARK: - Initializers
+// MARK: - Default Value
 public extension UserDefault {
     /// Creates a property that can read and write a user default with a default value.
     ///
@@ -93,6 +93,48 @@ public extension UserDefault {
         )
     }
 
+    /// Creates a property that can read and write a user default using a custom coding strategy.
+    ///
+    /// In the example below, the `ProfileSummary` type conforms to the `Codable` protocol
+    /// and is read/written from `UserDefaults` as JSON encoded `Data`.
+    ///
+    /// ```swift
+    /// @UserDefault(.profileSummary, strategy: .json)
+    /// var profileSummary = ProfileSummary()
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - defaultValue: The default value used when a value is not stored.
+    ///   - key: The key to read and write the value to in the user defaults store.
+    ///   - strategy: The custom coding strategy used when decoding the stored data.
+    ///   - userDefaults: The instance of `UserDefaults` used for storing the value. Defaults to `UserDefaults.standard`.
+    init(
+        wrappedValue defaultValue: Value,
+        _ key: UserDefaults.Key,
+        strategy: UserDefaults.CodingStrategy,
+        store userDefaults: UserDefaults = .standard
+    ) where Value: Codable {
+        self.init(
+            getValue: {
+                userDefaults.x.object(forKey: key, strategy: strategy) ?? defaultValue
+            },
+            setValue: { value in
+                userDefaults.x.set(value, forKey: key, strategy: strategy)
+            },
+            resetValue: {
+                userDefaults.x.removeObject(forKey: key)
+            },
+            observeValue: { handler in
+                userDefaults.x.observeObject(forKey: key, strategy: strategy) { change in
+                    handler(change.map({ $0 ?? defaultValue }))
+                }
+            }
+        )
+    }
+}
+
+// MARK: - Direct Usage (convenience)
+public extension UserDefault {
     /// Creates a property that can read and write a user default with a default value.
     ///
     /// This initialiser is more suitable when creating a property wrapper using injected values:
@@ -117,8 +159,37 @@ public extension UserDefault {
     ) where Value: UserDefaultsStorable {
         self.init(wrappedValue: defaultValue, key, store: userDefaults)
     }
+
+    /// Creates a property that can read and write a user default using a custom coding strategy.
+    ///
+    /// In the example below, the `ProfileSummary` type conforms to the `Codable` protocol
+    /// and is read/written from `UserDefaults` as JSON encoded `Data`.
+    ///
+    /// ```swift
+    /// @UserDefault
+    /// var profileSummary: ProfileSummary
+    ///
+    /// init(userDefaults: UserDefaults) {
+    ///     _profileSummary = UserDefault(.profileSummary, store: userDefaults, defaultValue: ProfileSummary())
+    /// }
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - key: The key to read and write the value to in the user defaults store.
+    ///   - strategy: The custom coding strategy used when decoding the stored data.
+    ///   - userDefaults: The instance of `UserDefaults` used for storing the value. Defaults to `UserDefaults.standard`.
+    ///   - defaultValue: The default value used when a value is not stored.
+    init(
+        _ key: UserDefaults.Key,
+        strategy: UserDefaults.CodingStrategy,
+        store userDefaults: UserDefaults = .standard,
+        defaultValue: Value
+    ) where Value: Codable {
+        self.init(wrappedValue: defaultValue, key, strategy: strategy, store: userDefaults)
+    }
 }
 
+// MARK: - Optionals
 public extension UserDefault where Value: ExpressibleByNilLiteral {
     /// Creates a property that can read and write an Optional user default.
     ///
@@ -150,6 +221,42 @@ public extension UserDefault where Value: ExpressibleByNilLiteral {
             },
             observeValue: { handler in
                 userDefaults.x.observeObject(forKey: key, handler: handler)
+            }
+        )
+    }
+
+    /// Creates a property that can read and write an Optional user default using a custom coding strategy.
+    ///
+    /// ```swift
+    /// @UserDefault(.profileSummary, strategy: .plist)
+    /// var userName: ProfileSummary?
+    /// ```
+    ///
+    /// - Parameters:
+    ///   - key: The key to read and write the value to in the user defaults store.
+    ///   - strategy: The custom coding strategy used when decoding the stored data.
+    ///   - userDefaults: The instance of `UserDefaults` used for storing the value. Defaults to `UserDefaults.standard`.
+    init<T: Codable>(
+        _ key: UserDefaults.Key,
+        strategy: UserDefaults.CodingStrategy,
+        store userDefaults: UserDefaults = .standard
+    ) where Value == T? {
+        self.init(
+            getValue: {
+                userDefaults.x.object(forKey: key, strategy: strategy)
+            },
+            setValue: { value in
+                if let value = value {
+                    userDefaults.x.set(value, forKey: key, strategy: strategy)
+                } else {
+                    userDefaults.x.removeObject(forKey: key)
+                }
+            },
+            resetValue: {
+                userDefaults.x.removeObject(forKey: key)
+            },
+            observeValue: { handler in
+                userDefaults.x.observeObject(forKey: key, strategy: strategy, handler: handler)
             }
         )
     }

@@ -23,6 +23,10 @@
 import SwiftUserDefaults
 import XCTest
 
+private struct Subject: Codable, Equatable {
+    var value: String
+}
+
 final class UserDefaultTests: XCTestCase {
     var userDefaults: UserDefaults!
 
@@ -98,5 +102,82 @@ final class UserDefaultTests: XCTestCase {
         userDefaults.x.set("Three", forKey: .init("StringKey"))
 
         XCTAssertEqual(changes, [.initial(""), .update("One"), .update(""), .update("Two"), .update("Three")])
+    }
+
+    func testCodableWithDefault() {
+        let key = UserDefaults.Key("CodableKey")
+        let wrapper = UserDefault<Subject>(key, strategy: .json, store: userDefaults, defaultValue: Subject(value: "default"))
+
+        // Observe changes
+        var changes: [Subject] = []
+        let token = wrapper.addObserver(handler: { changes.append($0.value) })
+        addTeardownBlock(token.invalidate)
+
+        // Uses default
+        XCTAssertNil(userDefaults.object(forKey: key.rawValue))
+        XCTAssertEqual(wrapper.wrappedValue, Subject(value: "default"))
+
+        // Writes value
+        wrapper.wrappedValue.value = "updated"
+        XCTAssertEqual(userDefaults.data(forKey: key.rawValue), Data(#"{"value":"updated"}"#.utf8))
+        XCTAssertEqual(wrapper.wrappedValue, Subject(value: "updated"))
+
+        // Resets
+        wrapper.reset()
+        XCTAssertNil(userDefaults.object(forKey: key.rawValue))
+
+        // Ignores bad data
+        userDefaults.set("string", forKey: key.rawValue)
+        XCTAssertEqual(wrapper.wrappedValue, Subject(value: "default"))
+
+        // Notifies changes
+        XCTAssertEqual(changes.map(\.value), [
+            "default",
+            "updated",
+            "default",
+            "default"
+        ])
+    }
+
+    func testCodable() {
+        let key = UserDefaults.Key("CodableKey")
+        let wrapper = UserDefault<Subject?>(key, strategy: .json, store: userDefaults)
+
+        // Observe changes
+        var changes: [Subject?] = []
+        let token = wrapper.addObserver(handler: { changes.append($0.value) })
+        addTeardownBlock(token.invalidate)
+
+        // nil when unset
+        XCTAssertNil(userDefaults.object(forKey: key.rawValue))
+        XCTAssertNil(wrapper.wrappedValue)
+
+        // Writes value
+        wrapper.wrappedValue = Subject(value: "updated")
+        XCTAssertEqual(userDefaults.data(forKey: key.rawValue), Data(#"{"value":"updated"}"#.utf8))
+        XCTAssertEqual(wrapper.wrappedValue, Subject(value: "updated"))
+
+        // Resets
+        wrapper.reset()
+        XCTAssertNil(userDefaults.object(forKey: key.rawValue))
+        XCTAssertNil(wrapper.wrappedValue)
+
+        // Ignores bad data
+        userDefaults.set("string", forKey: key.rawValue)
+        XCTAssertNil(wrapper.wrappedValue)
+
+        // Set to nil clears
+        userDefaults.set(Data(#"{"value":"value"}"#.utf8), forKey: key.rawValue)
+        wrapper.wrappedValue = nil
+
+        // Notifies changes
+        XCTAssertEqual(changes.map(\.?.value), [
+            nil,
+            "updated",
+            nil,
+            nil,
+            "value",
+            nil
+        ])
     }
 }
