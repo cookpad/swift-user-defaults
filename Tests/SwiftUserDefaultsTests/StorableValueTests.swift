@@ -23,10 +23,6 @@
 @testable import SwiftUserDefaults
 import XCTest
 
-enum RawSubject: String {
-    case foo, bar, baz
-}
-
 final class StorableValueTests: XCTestCase {
     func testArray() {
         let arrayValue: [String] = ["one", "two", "three"]

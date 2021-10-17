@@ -23,10 +23,6 @@
 import SwiftUserDefaults
 import XCTest
 
-private struct Subject: Codable, Equatable {
-    var value: String
-}
-
 final class UserDefaultTests: XCTestCase {
     var userDefaults: UserDefaults!
 

@@ -23,10 +23,6 @@
 import SwiftUserDefaults
 import XCTest
 
-private struct Subject: Codable, Equatable {
-    let value: String
-}
-
 private extension UserDefaults.Key {
     static let rawSubject = Self("RawSubject")
 }
@@ -54,7 +50,10 @@ final class UserDefaultsXTests: XCTestCase {
         // Mutations should be recorded
         userDefaults.x.set(RawSubject.baz, forKey: .rawSubject)
         userDefaults.x.removeObject(forKey: .rawSubject)
-        userDefaults.x.register(defaults: [.rawSubject: RawSubject.bar.rawValue])
+
+        var container = UserDefaults.ValueContainer()
+        container.set(RawSubject.bar, forKey: .rawSubject)
+        userDefaults.x.register(defaults: container)
         observer.invalidate()
 
         // Updated value should be read

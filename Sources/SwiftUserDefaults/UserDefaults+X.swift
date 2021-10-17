@@ -51,6 +51,10 @@ public extension UserDefaults.X {
         base.register(defaults: Dictionary(uniqueKeysWithValues: sequence))
     }
 
+    func register(defaults container: UserDefaults.ValueContainer) {
+        register(defaults: container.contents)
+    }
+
     /// Removes the value of the specified default key.
     ///
     /// - Parameter key: The key whose value you want to remove.
