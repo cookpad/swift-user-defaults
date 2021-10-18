@@ -36,12 +36,12 @@ class ContentViewModel: ObservableObject {
 
     @Published var items: [Date] = [] {
         didSet {
-            userDefaults.set(items, for: .contentItems)
+            userDefaults.x.set(items, forKey: .contentItems)
         }
     }
 
     init() {
-        items = userDefaults.object(for: .contentItems) ?? []
+        items = userDefaults.x.object(forKey: .contentItems) ?? []
     }
 
     func addItem() {
