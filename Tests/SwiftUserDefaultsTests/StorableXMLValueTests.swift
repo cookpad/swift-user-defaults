@@ -78,12 +78,13 @@ final class StorableXMLValueTests: XCTestCase {
 
     func testXMLString_string() {
         // FIXME: Multiline string encoding.
-//        assertValueMatchesPlist(
-//            """
-//            Hello
-//            Do newlines get escaped properly?
-//            """
-//        )
+        XCTExpectFailure()
+
+        let multiline = """
+            Hello,
+            World!
+            """
+        XCTAssertEqual(multiline.storableXMLValue, "<string>Hello,\\nWorld!</string>")
 
         assertValueMatchesPlist("Hello, World")
 
