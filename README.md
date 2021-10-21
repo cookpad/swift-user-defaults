@@ -4,14 +4,14 @@ A series of Swift friendly utilities for Foundation's `UserDefaults` class.
 
 # Features
 
-- [**Constant Keys**](#constant-keys) - Manage default keys using a specialized type to help prevent bugs and keep your project organized.
-- [**Type Safety**](#type-safety) - Automatically cast to the right types and forget about `Any?`.
-- [**Observations**](#observations) - Effortless observations in Swift.
-- [**Codable and RawRepresentable Support**](#codable-and-rawrepresentable-support) - Consistently encode and decode `Codable` and `RawRepresentable` types with no additional effort.
-- [**Mocking in UI Tests**](#mocking-in-ui-tests) - Inject default values from your UI test suite directly into your application.
-- [**Property Wrappers**](#property-wrappers) - Bringing the power of SwiftUI's `@AppStorage` wrapper to Swift with `@UserDefault`.
+- 🔑 [**Constant Keys**](#-constant-keys) - Manage default keys using a specialized type to help prevent bugs and keep your project organized.
+- 🦺 [**Type Safety**](#-type-safety) - Automatically cast to the right types and forget about `Any?`.
+- 🔍 [**Observations**](#-observations) - Effortless observations in Swift.
+- 👩‍💻 [**Codable and RawRepresentable Support**](#-codable-and-rawrepresentable-support) - Consistently encode and decode `Codable` and `RawRepresentable` types with no additional effort.
+- 🧪 [**Mocking in UI Tests**](#-mocking-in-ui-tests) - Inject default values from your UI test suite directly into your application.
+- 🎁 [**Property Wrappers**](#-property-wrappers) - Bringing the power of SwiftUI's `@AppStorage` wrapper to Swift with `@UserDefault`.
 
-## Constant Keys
+## 🔑 Constant Keys
 
 With `UserDefaults` today, you store values against a given 'key'. This key is a `String` and over time using string's can lead to easy to avoid bugs unless you are defining your own constants somewhere.
 
@@ -62,7 +62,7 @@ extension UserDefaults.Key {
 
 SwiftUserDefaults then provides a series of additional APIs built on top of this type. Continue reading to learn how to use them.
 
-## Type Safety
+## 🦺 Type Safety
 
 When using `UserDefaults`, you must only attempt to set booleans, data, dates, numbers or strings, as well as dictionaries or arrays consisting of those types otherwise you'll experience a runtime crash with no protections from the Compiler.
 
@@ -99,7 +99,7 @@ func updateCurrentUser(_ user: User) {
 }
 ```
 
-## Observations
+## 🔍 Observations
 
 `UserDefaults` is key-value observing compliant however you can't use Swift's key-path based overlay since the stored defaults don't associate to actual properties. SwiftUserDefaults helps solve this problem by providing a wrapper around the Objective C based KVO methods:
 
@@ -131,7 +131,7 @@ class MyViewController: UIViewController {
 
 The `change` property is the `UserDefaults.Change` enum which consists of two cases to represent both the `.initial` value and any subsequent `.update`'s. If you don't care about this, you can access the underlying value via the `value` property.
 
-## Codable and RawRepresentable Support
+## 👩‍💻 Codable and RawRepresentable Support
 
 In addition to supporting the default value types for `UserDefaults`, convenience methods have also been provided to facilitate the use of `Codable` and `RawRepresentable` types (including enums).
 
@@ -171,7 +171,7 @@ func showActivity(_ activity: Activity) {
 >
 > For more information, see the official [Apple Developer Documentation](https://developer.apple.com/documentation/foundation/userdefaults/1617187-sizelimitexceedednotification).
 
-## Mocking in UI Tests
+## 🧪 Mocking in UI Tests
 
 SwiftUserDefaults provides a structured way to inject values into `UserDefaults` of your App target from the UI Testing target. This works by formatting a payload of launch arguments that `UserDefaults` will read into the [`NSArgumentDomain`](https://developer.apple.com/documentation/foundation/nsargumentdomain).
 
@@ -234,7 +234,7 @@ class ViewController: UIViewController {
 }
 ```
 
-## Property Wrappers
+## 🎁 Property Wrappers
 
 SwiftUserDefaults brings `UserDefaults.Key` to SwiftUI's `@AppStorage` property wrapper, and in addition, it introduces an `@UserDefault` property wrapper with similar behavior that is suitable outside of SwiftUI.
 
