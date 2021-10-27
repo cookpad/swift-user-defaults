@@ -1,6 +1,6 @@
 /// MIT License
 ///
-/// Copyright (c) 2021 Liam Nichols
+/// Copyright (c) 2021 Cookpad Inc.
 ///
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
@@ -37,7 +37,7 @@ public extension UserDefaults {
 // MARK: - API
 public extension UserDefaults.X {
     internal static let log: OSLog = OSLog(
-        subsystem: "eu.liamnichols.swift-user-defaults",
+        subsystem: "com.cookpad.swift-user-defaults",
         category: "UserDefaults.X"
     )
 
@@ -124,7 +124,7 @@ public extension UserDefaults.X {
     ///
     ///
     /// When using this method, you should continue to consider that `UserDefaults` might not be suitable for storing large amounts of data.
-    /// 
+    ///
     /// - Parameters:
     ///   - value: The object to store in the defaults database.
     ///   - key: A key in the user‘s defaults database.

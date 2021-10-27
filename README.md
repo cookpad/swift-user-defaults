@@ -297,8 +297,8 @@ Add the following to your **Package.swift**
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/liamnichols/swift-user-defaults.git", .upToNextMajor(from: "0.1.0"))
+    .package(url: "https://github.com/cookpad/swift-user-defaults.git", .upToNextMajor(from: "0.1.0"))
 ]
 ```
 
-Or use the https://github.com/liamnichols/swift-user-defaults.git repository link in Xcode.
+Or use the https://github.com/cookpad/swift-user-defaults.git repository link in Xcode.

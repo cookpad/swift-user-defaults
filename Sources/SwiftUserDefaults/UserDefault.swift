@@ -1,6 +1,6 @@
 /// MIT License
 ///
-/// Copyright (c) 2021 Liam Nichols
+/// Copyright (c) 2021 Cookpad Inc.
 ///
 /// Permission is hereby granted, free of charge, to any person obtaining a copy
 /// of this software and associated documentation files (the "Software"), to deal
@@ -49,7 +49,7 @@ public struct UserDefault<Value> {
     }
 
     /// Observes changes to the specified user default in the underlying database.
-    /// 
+    ///
     /// - Parameter handler: A closure invoked whenever the observed value is modified.
     /// - Returns: A token object to be used to invalidate the observation by either deallocating the value or calling `invalidate()`.
     public func addObserver(handler: @escaping (UserDefaults.Change<Value>) -> Void) -> UserDefaults.Observation {
