@@ -88,7 +88,8 @@ GEM
     zeitwerk (2.5.1)
 
 PLATFORMS
-  x86_64-darwin-20
+  arm64-darwin
+  x86_64-darwin
 
 DEPENDENCIES
   cocoapods
