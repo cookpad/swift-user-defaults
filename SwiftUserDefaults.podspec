@@ -4,7 +4,7 @@ Pod::Spec.new do |s|
   s.summary = "A series of Swift friendly utilities for Foundation's UserDefaults class"
   s.homepage = "https://github.com/cookpad/swift-user-defaults"
   s.license = { :type => "MIT", :file => "LICENSE.txt" }
-  s.author = { 'liamnichols' => 'liam.nichols.ln@gmail.com' }
+  s.authors = { 'Liam Nichols' => 'liam.nichols.ln@gmail.com', 'Ryan Paterson' => 'ryan-paterson@cookpad.com' }
   s.source = { :git => "https://github.com/cookpad/swift-user-defaults.git", :tag => "v#{s.version}" }
   s.source_files = "Sources/**/*.{swift}"
   s.swift_version = "5.3"
