@@ -9,7 +9,6 @@ Pod::Spec.new do |s|
   s.source_files = "Sources/**/*.{swift}"
   s.swift_version = "5.3"
 
-  # iOS deployment target needs to be at minimum iOS 14 so SwiftUI library references compile during `pod lib lint`.
   s.ios.deployment_target = '11.0'
   s.osx.deployment_target = '10.12'
 
