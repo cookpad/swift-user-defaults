@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: macos-11
+
+    steps:
+    - uses: actions/checkout@v2
+
+    # Setup Ruby and Bundler
+    - name: Setup Ruby
+      uses: ruby/setup-ruby@v1
+      with:
+        bundler-cache: true
+
+    # Build
+    - name: Build
+      run: swift build -v
+
+    # Run Unit Tests
+    - name: Run tests
+      run: swift test -v
+
+    # Verify CocoaPods
+    - name: Verify CocoaPods
+      run: bundle exec pod lib lint
