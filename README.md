@@ -291,6 +291,14 @@ As with the `UserDefault.X` APIs, the property wrapper supports primitive, `RawR
 
 # Installation
 
+## CocoaPods
+
+[CocoaPods](https://cocoapods.org) is a dependency manager for Cocoa projects. For usage and installation instructions, visit their website. To integrate SwiftUserDefaults into your Xcode project using CocoaPods, specify it in your `Podfile`:
+
+```ruby
+pod 'swift-user-defaults'
+```
+
 ## Swift Package Manager
 
 Add the following to your **Package.swift**
