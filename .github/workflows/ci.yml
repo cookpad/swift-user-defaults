@@ -37,17 +37,15 @@ jobs:
         bundler-cache: true
 
     # Build library & Run Unit-Tests (MacOS)
-    - name: Build library MacOS
-      run: swift build -v
-    - name: Run library unit-tests MacOS
-      run: swift test -v
+    - name: Build & Unit-Test Library (MacOS)
+      run: set -o pipefail && env NSUnbufferedIO=YES xcodebuild -scheme $SCHEME -destination "${{ matrix.destination_macos }}" clean test | bundle exec xcpretty
 
     # Build library & Run Unit-Tests (iOS)
-    - name: Build & Unit-tests for Library iOS
+    - name: Build & Unit-Test Library (iOS)
       run: set -o pipefail && env NSUnbufferedIO=YES xcodebuild -scheme $SCHEME -destination "${{ matrix.destination_ios }}" clean test | bundle exec xcpretty
 
     # Build Example Project & Run UI-Tests (iOS)
-    - name: Build & UI-Test Example Project for iOS
+    - name: Build & UI-Test Example Project (iOS)
       run: set -o pipefail && env NSUnbufferedIO=YES xcodebuild -workspace $WORKSPACE -scheme $EXAMPLE_SCHEME -destination "${{ matrix.destination_ios }}" clean test | bundle exec xcpretty
 
     # Verify CocoaPods
