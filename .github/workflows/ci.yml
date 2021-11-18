@@ -10,6 +10,22 @@ jobs:
   build:
 
     runs-on: macos-11
+    env:
+      SCHEME: "swift-user-defaults"
+      EXAMPLE_SCHEME: "Example"
+      WORKSPACE: "Example/Example.xcworkspace"
+      DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode_version }}.app/Contents/Developer'
+
+    strategy:
+      matrix:
+        xcode_version: ['12.5', '13.1']
+        include:
+        - xcode_version: '12.5'
+          destination_ios: 'OS=14.5,name=iPhone 12'
+          destination_macos: 'platform=macOS'
+        - xcode_version: '13.1'
+          destination_ios: 'OS=15.0,name=iPhone 13'
+          destination_macos: 'platform=macOS'
 
     steps:
     - uses: actions/checkout@v2
@@ -20,13 +36,19 @@ jobs:
       with:
         bundler-cache: true
 
-    # Build
-    - name: Build
+    # Build library & Run Unit-Tests (MacOS)
+    - name: Build library MacOS
       run: swift build -v
-
-    # Run Unit Tests
-    - name: Run tests
+    - name: Run library unit-tests MacOS
       run: swift test -v
+
+    # Build library & Run Unit-Tests (iOS)
+    - name: Build & Unit-tests for Library iOS
+      run: set -o pipefail && env NSUnbufferedIO=YES xcodebuild -scheme $SCHEME -destination "${{ matrix.destination_ios }}" clean test | bundle exec xcpretty
+
+    # Build Example Project & Run UI-Tests (iOS)
+    - name: Build & UI-Test Example Project for iOS
+      run: set -o pipefail && env NSUnbufferedIO=YES xcodebuild -workspace $WORKSPACE -scheme $EXAMPLE_SCHEME -destination "${{ matrix.destination_ios }}" clean test | bundle exec xcpretty
 
     # Verify CocoaPods
     - name: Verify CocoaPods
