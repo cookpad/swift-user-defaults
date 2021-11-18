@@ -1,5 +1,6 @@
 Pod::Spec.new do |s|
   s.name = "swift-user-defaults"
+  s.module_name = "SwiftUserDefaults"
   s.version = "0.0.2"
   s.summary = "A series of Swift friendly utilities for Foundation's UserDefaults class"
   s.homepage = "https://github.com/cookpad/swift-user-defaults"
