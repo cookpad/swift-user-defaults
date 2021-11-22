@@ -21,9 +21,13 @@ jobs:
         - xcode_version: '12.5'
           destination_ios: 'OS=14.5,name=iPhone 12'
           destination_macos: 'platform=macOS'
+          destination_watchos: 'OS=7.4,name=Apple Watch Series 6 - 44mm'
+          destination_tvos: 'OS=14.5,name=Apple TV'
         - xcode_version: '13.1'
           destination_ios: 'OS=15.0,name=iPhone 13'
           destination_macos: 'platform=macOS'
+          destination_watchos: 'OS=8.0,name=Apple Watch Series 7 - 45mm'
+          destination_tvos: 'OS=15.0,name=Apple TV'
 
     steps:
     - uses: actions/checkout@v2
@@ -41,6 +45,14 @@ jobs:
     # Build library & Run Unit-Tests (iOS)
     - name: Build & Unit-Test Library (iOS)
       run: set -o pipefail && env NSUnbufferedIO=YES xcodebuild -scheme $SCHEME -destination "${{ matrix.destination_ios }}" clean test | bundle exec xcpretty
+
+    # Build library & Run Unit-Tests (watchOS)
+    - name: Build & Unit-Test Library (watchOS)
+      run: set -o pipefail && env NSUnbufferedIO=YES xcodebuild -scheme $SCHEME -destination "${{ matrix.destination_watchos }}" clean test | bundle exec xcpretty
+
+    # Build library & Run Unit-Tests (tvOS)
+    - name: Build & Unit-Test Library (tvOS)
+      run: set -o pipefail && env NSUnbufferedIO=YES xcodebuild -scheme $SCHEME -destination "${{ matrix.destination_tvos }}" clean test | bundle exec xcpretty
 
     # Build Example Project & Run UI-Tests (iOS)
     - name: Build & UI-Test Example Project (iOS)
