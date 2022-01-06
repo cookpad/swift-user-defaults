@@ -25,10 +25,9 @@ private struct AppConfiguration: LaunchArgumentEncodable {
         case registered, unregistered
     }
 
-    enum WindowPreference: Codable, Equatable {
-        case fullScreen
-        case fixed(width: Float)
-        case disableMinimize
+    struct WindowPreferences: Codable, Equatable {
+        var isFullScreenSupported: Bool = false
+        var isMinimizeEnabled: Bool = true
     }
 
     // UserDefaultsStorable with default value
@@ -57,21 +56,14 @@ private struct AppConfiguration: LaunchArgumentEncodable {
 
     // Codable with default value
     @UserDefaultOverride(.windowPreferences, strategy: .json)
-    var windowPreferences: [WindowPreference] = []
+    var windowPreferences: WindowPreferences = WindowPreferences()
 
     // The device locale to mock, can't be represented as a single @UserDefaultOverride
     var deviceLocale: Locale = Locale(identifier: "en_US")
 
     // Additonal Launch Arguments
     var additionalLaunchArguments: [String] {
-        // TODO: Remove this from the tests and place it in the Example project.
-        var container = UserDefaults.ValueContainer()
-        container.set([deviceLocale.languageCode!], forKey: .appleLanguages)
-        container.set(deviceLocale.identifier, forKey: .appleLocale)
-
-        return container.launchArguments + [
-            "UI-Testing"
-        ]
+        ["UI-Testing"]
     }
 }
 
@@ -82,7 +74,7 @@ class LaunchArgumentEncodableTests: XCTestCase {
         configuration.state = .registered
         configuration.lastState = .unregistered
         configuration.lastVisitDate = Date(timeIntervalSinceReferenceDate: 60 * 60 * 24)
-        configuration.windowPreferences = [.disableMinimize]
+        configuration.windowPreferences.isMinimizeEnabled = false
 
         let launchArguments = try configuration.encodeLaunchArguments()
 
@@ -92,7 +84,7 @@ class LaunchArgumentEncodableTests: XCTestCase {
         XCTAssertEqual(configuration.lastState, .unregistered)
         XCTAssertNil(configuration.isLegacyUser)
         XCTAssertEqual(configuration.lastVisitDate, Date(timeIntervalSinceReferenceDate: 60 * 60 * 24))
-        XCTAssertEqual(configuration.windowPreferences, [.disableMinimize])
+        XCTAssertEqual(configuration.windowPreferences.isMinimizeEnabled, false)
 
         XCTAssertEqual(launchArguments, [
             "-UUID", "<string>TESTING</string>",
@@ -100,9 +92,7 @@ class LaunchArgumentEncodableTests: XCTestCase {
             "-State", "<string>registered</string>",
             "-LastState", "<string>unregistered</string>",
             "-LastVisitDate", "<date>2001-01-02T00:00:00Z</date>",
-            "-WindowPreferences", "<data>W3siZGlzYWJsZU1pbmltaXplIjp7fX1d</data>",
-            "-AppleLanguages", "<array><string>en</string></array>",
-            "-AppleLocale", "<string>en_US</string>",
+            "-WindowPreferences", "<data>eyJpc0Z1bGxTY3JlZW5TdXBwb3J0ZWQiOmZhbHNlLCJpc01pbmltaXplRW5hYmxlZCI6ZmFsc2V9</data>",
             "UI-Testing"
         ])
     }
