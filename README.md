@@ -198,15 +198,25 @@ import MyAppCommon
 import SwiftUserDefaults
 import XCTest
 
+struct MyAppConfiguration: LaunchArgumentEncodable {
+    @UserDefaultOverride(key: .currentLevel)
+    var currentLevel: Int?
+    
+    @UserDefaultOverride(key: .userName)
+    var userName: String?
+    
+    @UserDefaultOverride(key: .userGUID)
+    var userGUID = "FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF"
+}
+
 final class MyAppTests: XCTestCase {
-    func testMyApp() {
-        var container = UserDefaults.ValueContainer()
-        container.set(8, forKey: .currentLevel)
-        container.set("John Doe", forKey: .userName)
-        container.set("FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF", forKey: .userGUID)
+    func testMyApp() throws {
+        var configuration = MyAppConfiguration()
+        container.currentLevel = 8
+        container.userName = "John Doe"
 
         let app = XCUIApplication()
-        app.launchArguments = container.launchArguments
+        app.launchArguments = try configuration.encodeLaunchArguments()
         app.launch()
 
         // ...
