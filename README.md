@@ -199,13 +199,13 @@ import SwiftUserDefaults
 import XCTest
 
 struct MyAppConfiguration: LaunchArgumentEncodable {
-    @UserDefaultOverride(key: .currentLevel)
+    @UserDefaultOverride(.currentLevel)
     var currentLevel: Int?
     
-    @UserDefaultOverride(key: .userName)
+    @UserDefaultOverride(.userName)
     var userName: String?
     
-    @UserDefaultOverride(key: .userGUID)
+    @UserDefaultOverride(.userGUID)
     var userGUID = "FFFFFFFF-FFFF-FFFF-FFFF-FFFFFFFFFFFF"
 }
 

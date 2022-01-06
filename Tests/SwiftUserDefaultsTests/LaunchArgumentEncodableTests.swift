@@ -32,31 +32,31 @@ private struct AppConfiguration: LaunchArgumentEncodable {
     }
 
     // UserDefaultsStorable with default value
-    @UserDefaultOverride(key: .uuid)
+    @UserDefaultOverride(.uuid)
     var uuid: String = "TESTING"
 
     // Optional Codable
-    @UserDefaultOverride(key: .user, strategy: .json)
+    @UserDefaultOverride(.user, strategy: .json)
     var user: User?
 
     // RawRepresentable with default value
-    @UserDefaultOverride(key: .state)
+    @UserDefaultOverride(.state)
     var state: State = .unregistered
 
     // Optional RawRepresentable
-    @UserDefaultOverride(key: .lastState)
+    @UserDefaultOverride(.lastState)
     var lastState: State?
 
     // Optional UserDefaultsStorable
-    @UserDefaultOverride(key: .isLegacyUser)
+    @UserDefaultOverride(.isLegacyUser)
     var isLegacyUser: Bool?
 
     // Optional UserDefaultsStorable
-    @UserDefaultOverride(key: .lastVisitDate)
+    @UserDefaultOverride(.lastVisitDate)
     var lastVisitDate: Date?
 
     // Codable with default value
-    @UserDefaultOverride(key: .windowPreferences, strategy: .json)
+    @UserDefaultOverride(.windowPreferences, strategy: .json)
     var windowPreferences: [WindowPreference] = []
 
     // The device locale to mock, can't be represented as a single @UserDefaultOverride

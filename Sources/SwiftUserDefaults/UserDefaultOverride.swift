@@ -40,15 +40,15 @@ import Foundation
 ///
 /// struct AppConfiguration: LaunchArgumentEncodable {
 ///     // An optional Codable property, encoded to data using the `.plist` strategy.
-///     @UserDefaultOverride(key: .user, strategy: .plist)
+///     @UserDefaultOverride(.user, strategy: .plist)
 ///     var user: User?
 ///
 ///     // A RawRepresentable enum with a default value, encoded to it's backing `rawValue` (a String).
-///     @UserDefaultOverride(key: .state)
+///     @UserDefaultOverride(.state)
 ///     var state: State = .unregistered
 ///
 ///     // An optional primative type (Bool). When `nil`, values will not be used as an override since null cannot be represented.
-///     @UserDefaultOverride(key: .isLegacyUser)
+///     @UserDefaultOverride(.isLegacyUser)
 ///     var isLegacyUser: Bool?
 ///
 ///     // A convenient place to define other launch arguments that don't relate to `UserDefaults`.
@@ -117,40 +117,40 @@ public struct UserDefaultOverride<Value> {
 
     public init(
         wrappedValue defaultValue: Value,
-        key: UserDefaults.Key
+        _ key: UserDefaults.Key
     ) where Value: UserDefaultsStorable {
         self.init(wrappedValue: defaultValue, key: key, transform: { $0 })
     }
 
     public init<T: UserDefaultsStorable>(
-        key: UserDefaults.Key
+        _ key: UserDefaults.Key
     ) where Value == T? {
         self.init(wrappedValue: nil, key: key, transform: { $0 })
     }
 
     public init(
         wrappedValue defaultValue: Value,
-        key: UserDefaults.Key
+        _ key: UserDefaults.Key
     ) where Value: RawRepresentable, Value.RawValue: UserDefaultsStorable {
         self.init(wrappedValue: defaultValue, key: key, transform: { $0.rawValue })
     }
 
     public init<T: RawRepresentable>(
-        key: UserDefaults.Key
+        _ key: UserDefaults.Key
     ) where Value == T?, T.RawValue: UserDefaultsStorable {
         self.init(wrappedValue: nil, key: key, transform: { $0?.rawValue })
     }
 
     public init(
         wrappedValue defaultValue: Value,
-        key: UserDefaults.Key,
+        _ key: UserDefaults.Key,
         strategy: UserDefaults.CodingStrategy
     ) where Value: Encodable {
         self.init(wrappedValue: defaultValue, key: key, transform: { try strategy.encode($0) })
     }
 
     public init<T: Encodable>(
-        key: UserDefaults.Key,
+        _ key: UserDefaults.Key,
         strategy: UserDefaults.CodingStrategy
     ) where Value == T? {
         self.init(wrappedValue: nil, key: key, transform: { try $0.flatMap({ try strategy.encode($0) }) })
