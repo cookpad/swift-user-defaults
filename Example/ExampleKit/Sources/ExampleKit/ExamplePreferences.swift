@@ -31,4 +31,20 @@ public extension UserDefaults.Key {
 
     /// User defaults key representing the items displayed in the list of `ContentView`
     static let contentItems = Self("ContentItems")
+
+    /// The order used to sort the items that are displayed in `ContentView`
+    static let contentSortOrder = Self("ContentSortOrder")
+}
+
+public enum ContentSortOrder: String {
+    case ascending, descending
+
+    public func compare<T: Comparable>(lhs: T, rhs: T) -> Bool {
+        switch self {
+        case .ascending:
+            return lhs < rhs
+        case .descending:
+            return lhs > rhs
+        }
+    }
 }

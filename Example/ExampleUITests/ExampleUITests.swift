@@ -25,44 +25,63 @@ import SwiftUserDefaults
 import XCTest
 
 class ExampleUITests: XCTestCase {
-    func testNoItemsPlaceholder() {
+    struct Configuration: LaunchArgumentEncodable {
+        @UserDefaultOverride(.contentTitle)
+        var title: String = "Example App (Test)"
+
+        @UserDefaultOverride(.contentItems)
+        var items: [Date] = []
+
+        @UserDefaultOverride(.contentSortOrder)
+        var sortOrder: ContentSortOrder = .descending
+
+        var deviceLocale: Locale = Locale(identifier: "en_US")
+
+        var additionalLaunchArguments: [String] {
+            // Type `Locale` doesn't match how we want to represen the `AppleLocale` UserDefault so we'll encode it manually
+            var container = UserDefaults.ValueContainer()
+            container.set(deviceLocale.identifier, forKey: UserDefaults.Key("AppleLocale"))
+
+            return container.launchArguments
+        }
+    }
+
+    func testNoItemsPlaceholder() throws {
         // Configure UserDefaults to ensure that there are no items
-        // Use the UserDefaults.Key constants from ExampleKit to keep test code in sync
-        var container = UserDefaults.ValueContainer()
-        container.set("Example App", forKey: .contentTitle)
-        container.set(Array<Date>(), forKey: .contentItems)
+        // The default definition of `Configuration` sets sensible defaults to ensure a consistent (empty) state.
+        let configuration = Configuration()
 
         // Launch the app with the user defaults
         let app = XCUIApplication()
-        app.launchArguments = container.launchArguments
+        app.launchArguments = try configuration.encodeLaunchArguments()
         app.launch()
 
         // Ensure the placeholder is set properly
-        XCTAssertTrue(app.navigationBars["Example App"].exists)
+        XCTAssertTrue(app.navigationBars["Example App (Test)"].exists)
         XCTAssertTrue(app.staticTexts["No Items"].exists)
     }
 
-    func testDeleteItem() {
+    func testDeleteItem() throws {
         let calendar = Calendar.current
         let startDate = calendar.date(from: DateComponents(year: 2021, month: 6, day: 1, hour: 9, minute: 10))!
 
-        // Configure UserDefaults to contain items with known dates
-        // Use 'String' keys for a simplified extension (avoiding UserDefaults.Key)
-        var container = UserDefaults.ValueContainer()
-        container.set(["fr_FR"], forKey: UserDefaults.Key("AppleLanguages"))
-        container.set("Example App", forKey: .contentTitle)
-        container.set([
+        // Configure a more complex scenario to test by overriding various values
+        var configuration = Configuration()
+        configuration.deviceLocale = Locale(identifier: "fr_FR")
+        configuration.sortOrder = .ascending
+        configuration.title = "Example App"
+        configuration.items = [
             startDate,
             calendar.date(byAdding: .day, value: 1, to: startDate)!,
             calendar.date(byAdding: .day, value: 2, to: startDate)!,
             calendar.date(byAdding: .day, value: 3, to: startDate)!,
             calendar.date(byAdding: .day, value: 4, to: startDate)!,
             calendar.date(byAdding: .day, value: 5, to: startDate)!
-        ], forKey: .contentItems)
+        ]
 
-        // Launch the app with the user defaults
+        // Launch the app with the user default overrides
         let app = XCUIApplication()
-        app.launchArguments = container.launchArguments
+        app.launchArguments = try configuration.encodeLaunchArguments()
         app.launch()
 
         // Find a known cell, ensure it exists
