@@ -63,26 +63,14 @@ final class UserDefaultsValueContainerTests: XCTestCase {
         container.set(true, forKey: .valueTwo)
         container.set(123, forKey: .valueThree)
 
-        // When the launch arguments are chunked by every two item and put into a dictionary (since order is ambiguous)
-        let launchArguments = Dictionary(
-            uniqueKeysWithValues: container.launchArguments
-                .chunked(into: 2)
-                .map({ ($0.first!, $0.last!) })
-        )
+        // When the launch arguments are read
+        let launchArguments = container.launchArguments
 
         // The contents will match as expected
         XCTAssertEqual(launchArguments, [
-            "-ValueOne": "<string>Hello, World</string>",
-            "-ValueTwo": "<true/>",
-            "-ValueThree": "<integer>123</integer>"
+            "-ValueOne", "<string>Hello, World</string>",
+            "-ValueTwo", "<true/>",
+            "-ValueThree", "<integer>123</integer>"
         ])
-    }
-}
-
-extension Array {
-    func chunked(into size: Int) -> [[Element]] {
-        return stride(from: 0, to: count, by: size).map {
-            Array(self[$0 ..< Swift.min($0 + size, count)])
-        }
     }
 }

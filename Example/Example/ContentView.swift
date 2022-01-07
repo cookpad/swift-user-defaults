@@ -26,6 +26,7 @@ import SwiftUI
 struct ContentView: View {
     // AppStorage is backed by UserDefaults so this works too!
     @AppStorage(.contentTitle) var title: String?
+    @AppStorage(.contentSortOrder) var sortOrder: ContentSortOrder = .descending
     @ObservedObject var viewModel = ContentViewModel()
 
     var body: some View {
@@ -37,7 +38,7 @@ struct ContentView: View {
                         .frame(maxWidth: .infinity)
                 } else {
                     List {
-                        ForEach(viewModel.items, id: \.self) { item in
+                        ForEach(viewModel.items.sorted(by: sortOrder.compare(lhs:rhs:)), id: \.self) { item in
                             Text("\(item, formatter: viewModel.dateFormatter)")
                         }
                         .onDelete(perform: { viewModel.items.remove(atOffsets: $0) })

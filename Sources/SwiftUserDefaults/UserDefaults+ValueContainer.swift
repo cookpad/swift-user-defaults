@@ -28,6 +28,9 @@ public extension UserDefaults {
         /// The underlying contents of the container.
         public private(set) var contents: [UserDefaults.Key: UserDefaultsStorable]
 
+        /// An array of keys in the order that they were applied
+        private var order: [UserDefaults.Key] = []
+
         public init() {
             contents = [:]
         }
@@ -41,6 +44,7 @@ public extension UserDefaults {
         ///   - key: The key with which to associate the value.
         public mutating func set(_ value: UserDefaultsStorable, forKey key: UserDefaults.Key) {
             contents[key] = value
+            order.append(key)
         }
 
         /// Sets the value of the specified default key.
@@ -64,12 +68,18 @@ public extension UserDefaults {
 
         // MARK: - Launch Arguments
 
+        private func sortValue(for key: UserDefaults.Key) -> Int {
+            order.lastIndex(of: key) ?? 0
+        }
+
         /// An array of strings representing the contents of the container that can be passed into a process as launch arguments in order to be read into `UserDefaults`'s `NSArgumentDomain`.
         public var launchArguments: [String] {
-            contents.reduce(into: Array<String>()) { launchArguments, element in
-                launchArguments.append("-" + element.key.rawValue)
-                launchArguments.append(element.value.storableXMLValue)
-            }
+            contents
+                .sorted(by: { sortValue(for: $0.key) < sortValue(for: $1.key) })
+                .reduce(into: Array<String>()) { launchArguments, element in
+                    launchArguments.append("-" + element.key.rawValue)
+                    launchArguments.append(element.value.storableXMLValue)
+                }
         }
     }
 }
