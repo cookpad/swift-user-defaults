@@ -25,8 +25,8 @@ public extension LaunchArgumentEncodable {
         var container = UserDefaults.ValueContainer()
 
         for child in mirror.children {
-            if let argument = child.value as? UserDefaultKeyValueRepresentable, let (key, value) = try argument.keyValuePair() {
-                container.set(value, forKey: key)
+            if let override = child.value as? UserDefaultOverrideRepresentable, let value = try override.getValue() {
+                container.set(value, forKey: override.key)
             }
         }
 

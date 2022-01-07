@@ -1,5 +1,14 @@
 import Foundation
 
+/// A protocol to help erase generic type information from ``UserDefaultOverride`` when attempting to obtain the key value pair.
+public protocol UserDefaultOverrideRepresentable {
+    /// The key of the user default value that should be overidden.
+    var key: UserDefaults.Key { get }
+
+    /// The value of the user default value that shoul be overridden, or nil if an override should not be applied.
+    func getValue() throws -> UserDefaultsStorable?
+}
+
 /// A property wrapper used for marking types as a value that should be used as an override in `UserDefaults`.
 ///
 /// On its own, `@UserDefaultOverride` or `LaunchOverrides` cannot override values stored in `UserDefaults`, but they can provide an array of launch arguments that you can then pass to a process. There are two scenarios where you might find this useful:
@@ -85,18 +94,28 @@ import Foundation
 /// }
 /// ```
 @propertyWrapper
-public struct UserDefaultOverride<Value> {
-    let getValue: () -> Value
-    let setValue: (Value) -> Void
-    let getKeyValuePair: () throws -> (key: UserDefaults.Key, value: UserDefaultsStorable)?
+public struct UserDefaultOverride<Value>: UserDefaultOverrideRepresentable {
+    let valueGetter: () -> Value
+    let valueSetter: (Value) -> Void
+    let storableValue: () throws -> UserDefaultsStorable?
+
+    public let key: UserDefaults.Key
+
+    public func getValue() throws -> UserDefaultsStorable? {
+        try storableValue()
+    }
 
     public var wrappedValue: Value {
         get {
-            getValue()
+            valueGetter()
         }
         set {
-            setValue(newValue)
+            valueSetter(newValue)
         }
+    }
+
+    public var projectedValue: UserDefaultOverrideRepresentable {
+        self
     }
 
     init(
@@ -106,12 +125,12 @@ public struct UserDefaultOverride<Value> {
     ) {
         var value: Value = defaultValue
 
-        getValue = { value }
-        setValue = { value = $0 }
-
-        getKeyValuePair = {
+        self.key = key
+        self.valueGetter = { value }
+        self.valueSetter = { value = $0 }
+        self.storableValue = {
             guard let value = try transform(value) else { return nil }
-            return (key: key, value: value)
+            return value
         }
     }
 
@@ -154,19 +173,5 @@ public struct UserDefaultOverride<Value> {
         strategy: UserDefaults.CodingStrategy
     ) where Value == T? {
         self.init(wrappedValue: nil, key: key, transform: { try $0.flatMap({ try strategy.encode($0) }) })
-    }
-}
-
-// MARK: - UserDefaultKeyValueRepresentable
-
-/// Internal protocol to help erase generic type information from `UserDefaultOverride` when attempting to obtain the key value pair.
-protocol UserDefaultKeyValueRepresentable {
-    /// Returns the pair, nil or an error upon request.
-    func keyValuePair() throws -> (key: UserDefaults.Key, value: UserDefaultsStorable)?
-}
-
-extension UserDefaultOverride: UserDefaultKeyValueRepresentable {
-    func keyValuePair() throws -> (key: UserDefaults.Key, value: UserDefaultsStorable)? {
-        try getKeyValuePair()
     }
 }

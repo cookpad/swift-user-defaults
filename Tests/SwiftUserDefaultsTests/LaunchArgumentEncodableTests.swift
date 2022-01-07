@@ -96,4 +96,16 @@ class LaunchArgumentEncodableTests: XCTestCase {
             "UI-Testing"
         ])
     }
+
+    func testProjectedValue() throws {
+        // Given a property wrapper
+        @UserDefaultOverride(.state)
+        var state = AppConfiguration.State.registered
+
+        // When the projected value is accessed
+        let projectedValue = $state
+
+        XCTAssertEqual(projectedValue.key, .state)
+        XCTAssertEqual(try projectedValue.getValue() as? String, "registered")
+    }
 }
