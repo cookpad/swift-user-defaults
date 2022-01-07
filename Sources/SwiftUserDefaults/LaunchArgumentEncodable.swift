@@ -4,7 +4,7 @@ import Foundation
 ///
 /// This protocol works exclusively in conjunction with the ``UserDefaultOverride`` property wrapper.
 public protocol LaunchArgumentEncodable {
-    /// Additional values to be apended to the result of `collectLaunchArguments()`.
+    /// Additional values to be appended to the result of `collectLaunchArguments()`.
     ///
     /// A default implementation is provided that returns an empty array.
     var additionalLaunchArguments: [String] { get }
@@ -15,11 +15,11 @@ public extension LaunchArgumentEncodable {
         []
     }
 
-    /// Collects the complete array of launch arguments from the reciever.
+    /// Collects the complete array of launch arguments from the receiver.
     ///
     /// The contents of the return value is built by using Reflection to look for all `@UserDefaultOverride` property wrapper instances. See ``UserDefaultOverride`` for more information.
     ///
-    /// In addition to overrides, the contents of `additionalLaunchArguments` is apended to the return value.
+    /// In addition to overrides, the contents of `additionalLaunchArguments` is appended to the return value.
     func encodeLaunchArguments() throws -> [String] {
         let mirror = Mirror(reflecting: self)
         var container = UserDefaults.ValueContainer()

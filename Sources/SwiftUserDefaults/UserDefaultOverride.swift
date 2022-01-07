@@ -47,7 +47,7 @@ import Foundation
 ///     @UserDefaultOverride(.state)
 ///     var state: State = .unregistered
 ///
-///     // An optional primative type (Bool). When `nil`, values will not be used as an override since null cannot be represented.
+///     // An optional primitive type (Bool). When `nil`, values will not be used as an override since null cannot be represented.
 ///     @UserDefaultOverride(.isLegacyUser)
 ///     var isLegacyUser: Bool?
 ///
@@ -58,7 +58,7 @@ import Foundation
 /// }
 /// ```
 ///
-/// Finally, in your test cases, create and configure an instnace of your container type and use the `collectLaunchArguments()` method to pass the overrides into your `XCUIApplication` and perform the UI tests like normal. The overrides will be picked up by `UserDefaults` instances in your app to help you in testing preconfigured states.
+/// Finally, in your test cases, create and configure an instance of your container type and use the `collectLaunchArguments()` method to pass the overrides into your `XCUIApplication` and perform the UI tests like normal. The overrides will be picked up by `UserDefaults` instances in your app to help you in testing pre-configured states.
 ///
 /// ```swift
 /// import SwiftUserDefaults
@@ -76,7 +76,7 @@ import Foundation
 ///         app.launchArguments = try configuration.encodeLaunchArguments()
 ///         app.launch()
 ///
-///         // The launch arugments will look like the following:
+///         // The launch arguments will look like the following:
 ///         app.launchArguments
 ///         // ["-User", "<data>...</data>", "-State", "<string>registered</string>", "UI-Testing"]
 ///
