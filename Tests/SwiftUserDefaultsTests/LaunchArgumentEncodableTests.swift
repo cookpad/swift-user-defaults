@@ -48,7 +48,7 @@ private struct AppConfiguration: LaunchArgumentEncodable {
 
     // Optional UserDefaultsStorable
     @UserDefaultOverride(.isLegacyUser)
-    var isLegacyUser: Bool?
+    var isLegacyUser: Bool? = false
 
     // Optional UserDefaultsStorable
     @UserDefaultOverride(.lastVisitDate)
@@ -82,7 +82,7 @@ class LaunchArgumentEncodableTests: XCTestCase {
         XCTAssertEqual(configuration.user, AppConfiguration.User(name: "John"))
         XCTAssertEqual(configuration.state, .registered)
         XCTAssertEqual(configuration.lastState, .unregistered)
-        XCTAssertNil(configuration.isLegacyUser)
+        XCTAssertEqual(configuration.isLegacyUser, false)
         XCTAssertEqual(configuration.lastVisitDate, Date(timeIntervalSinceReferenceDate: 60 * 60 * 24))
         XCTAssertEqual(configuration.windowPreferences.isMinimizeEnabled, false)
 
@@ -91,6 +91,7 @@ class LaunchArgumentEncodableTests: XCTestCase {
             "-User", "<data>eyJuYW1lIjoiSm9obiJ9</data>",
             "-State", "<string>registered</string>",
             "-LastState", "<string>unregistered</string>",
+            "-LegacyUser", "<false/>",
             "-LastVisitDate", "<date>2001-01-02T00:00:00Z</date>",
             "-WindowPreferences", "<data>eyJpc0Z1bGxTY3JlZW5TdXBwb3J0ZWQiOmZhbHNlLCJpc01pbmltaXplRW5hYmxlZCI6ZmFsc2V9</data>",
             "UI-Testing"

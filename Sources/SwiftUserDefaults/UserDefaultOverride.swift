@@ -142,9 +142,10 @@ public struct UserDefaultOverride<Value>: UserDefaultOverrideRepresentable {
     }
 
     public init<T: UserDefaultsStorable>(
+        wrappedValue defaultValue: Value = nil,
         _ key: UserDefaults.Key
     ) where Value == T? {
-        self.init(wrappedValue: nil, key: key, transform: { $0 })
+        self.init(wrappedValue: defaultValue, key: key, transform: { $0 })
     }
 
     public init(
@@ -155,9 +156,10 @@ public struct UserDefaultOverride<Value>: UserDefaultOverrideRepresentable {
     }
 
     public init<T: RawRepresentable>(
+        wrappedValue defaultValue: Value = nil,
         _ key: UserDefaults.Key
     ) where Value == T?, T.RawValue: UserDefaultsStorable {
-        self.init(wrappedValue: nil, key: key, transform: { $0?.rawValue })
+        self.init(wrappedValue: defaultValue, key: key, transform: { $0?.rawValue })
     }
 
     public init(
@@ -169,9 +171,10 @@ public struct UserDefaultOverride<Value>: UserDefaultOverrideRepresentable {
     }
 
     public init<T: Encodable>(
+        wrappedValue defaultValue: Value = nil,
         _ key: UserDefaults.Key,
         strategy: UserDefaults.CodingStrategy
     ) where Value == T? {
-        self.init(wrappedValue: nil, key: key, transform: { try $0.flatMap({ try strategy.encode($0) }) })
+        self.init(wrappedValue: defaultValue, key: key, transform: { try $0.flatMap({ try strategy.encode($0) }) })
     }
 }
