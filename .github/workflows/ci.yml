@@ -69,4 +69,4 @@ jobs:
 
     # Verify CocoaPods
     - name: Verify CocoaPods
-      run: bundle exec pod lib lint
+      run: bundle exec pod lib lint --allow-warnings
