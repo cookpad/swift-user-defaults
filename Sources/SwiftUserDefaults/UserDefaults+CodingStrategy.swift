@@ -42,7 +42,9 @@ public extension UserDefaults.CodingStrategy {
     func encode<T: Encodable>(_ value: T) throws -> Data {
         switch self {
         case .json:
-            return try JSONEncoder().encode(value)
+            let encoder = JSONEncoder()
+            encoder.outputFormatting = .sortedKeys
+            return try encoder.encode(value)
         case .plist:
             return try PropertyListEncoder().encode(value)
         }
