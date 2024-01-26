@@ -49,23 +49,23 @@ jobs:
 
     # Build library & Run Unit-Tests (macOS)
     - name: Build & Unit-Test Library (macOS)
-      run: ${{ env.XCODEBUILD }} -scheme $SCHEME -destination "platform=macOS" clean test | bundle exec xcpretty
+      run: ${{ env.XCODEBUILD }} -scheme $SCHEME -destination "platform=macOS" clean test | xcbeautify
 
     # Build library & Run Unit-Tests (iOS)
     - name: Build & Unit-Test Library (iOS)
-      run: ${{ env.XCODEBUILD }} -scheme $SCHEME -destination "${{ matrix.destination_ios }}" clean test | bundle exec xcpretty
+      run: ${{ env.XCODEBUILD }} -scheme $SCHEME -destination "${{ matrix.destination_ios }}" clean test | xcbeautify
 
     # Build library & Run Unit-Tests (watchOS)
     - name: Build & Unit-Test Library (watchOS)
-      run: ${{ env.XCODEBUILD }} -scheme $SCHEME -destination "${{ matrix.destination_watchos }}" clean test | bundle exec xcpretty
+      run: ${{ env.XCODEBUILD }} -scheme $SCHEME -destination "${{ matrix.destination_watchos }}" clean test | xcbeautify
 
     # Build library & Run Unit-Tests (tvOS)
     - name: Build & Unit-Test Library (tvOS)
-      run: ${{ env.XCODEBUILD }} -scheme $SCHEME -destination "${{ matrix.destination_tvos }}" clean test | bundle exec xcpretty
+      run: ${{ env.XCODEBUILD }} -scheme $SCHEME -destination "${{ matrix.destination_tvos }}" clean test | xcbeautify
 
     # Build Example Project & Run UI-Tests (iOS)
     - name: Build & UI-Test Example Project (iOS)
-      run: ${{ env.XCODEBUILD }} -workspace "Example/Example.xcworkspace" -scheme "Example" -destination "${{ matrix.destination_ios }}" clean test | bundle exec xcpretty
+      run: ${{ env.XCODEBUILD }} -workspace "Example/Example.xcworkspace" -scheme "Example" -destination "${{ matrix.destination_ios }}" clean test | xcbeautify
 
     # Verify CocoaPods
     - name: Verify CocoaPods
