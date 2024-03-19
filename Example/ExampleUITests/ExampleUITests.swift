@@ -41,6 +41,7 @@ class ExampleUITests: XCTestCase {
             // Type `Locale` doesn't match how we want to represent the `AppleLocale` UserDefault so we'll encode it manually
             var container = UserDefaults.ValueContainer()
             container.set(deviceLocale.identifier, forKey: UserDefaults.Key("AppleLocale"))
+            container.set(deviceLocale.identifier, forKey: UserDefaults.Key("AppleLanguages"))
 
             return container.launchArguments
         }
