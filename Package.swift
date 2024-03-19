@@ -15,7 +15,7 @@ let package = Package(
         .library(name: "SwiftUserDefaults", targets: ["SwiftUserDefaults"]),
     ],
     targets: [
-        .target(name: "SwiftUserDefaults", dependencies: []),
+        .target(name: "SwiftUserDefaults", dependencies: [], resources: [.copy("PrivacyInfo.xcprivacy")]),
         .testTarget(name: "SwiftUserDefaultsTests", dependencies: ["SwiftUserDefaults"])
     ]
 )
