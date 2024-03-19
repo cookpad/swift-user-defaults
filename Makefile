@@ -1,5 +1,5 @@
 setup:
-	bundle install
+	bundle check || bundle install
 
 lint:	setup
 	bundle exec pod lib lint --allow-warnings

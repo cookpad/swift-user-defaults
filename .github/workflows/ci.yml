@@ -6,58 +6,113 @@ on:
   pull_request:
     branches: [ main ]
 
-jobs:
-  build:
-    name: Checks (Xcode ${{ matrix.xcode_version }})
-    runs-on: macos-11
-    env:
-      SCHEME: "swift-user-defaults"
-      DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode_version }}.app/Contents/Developer'
+env:
+  SCHEME: "swift-user-defaults"
+  XCODEBUILD: set -o pipefail && env NSUnbufferedIO=YES xcodebuild
 
+jobs:
+  test-macos:
+    name: Test (macOS, Xcode ${{ matrix.xcode }})
+    runs-on: ${{ matrix.macos }}
+    env:
+      DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer'
     strategy:
       matrix:
-        xcode_version: ['12.5', '13.1']
+        xcode: [ 14.3.1, 15.2 ]
         include:
-        - xcode_version: '12.5'
-          destination_ios: 'OS=14.5,name=iPhone 12'
-          destination_macos: 'platform=macOS'
-          destination_watchos: 'OS=7.4,name=Apple Watch Series 6 - 44mm'
-          destination_tvos: 'OS=14.5,name=Apple TV'
-        - xcode_version: '13.1'
-          destination_ios: 'OS=15.0,name=iPhone 13'
-          destination_macos: 'platform=macOS'
-          destination_watchos: 'OS=8.0,name=Apple Watch Series 7 - 45mm'
-          destination_tvos: 'OS=15.0,name=Apple TV'
-
+        - xcode: 14.3.1
+          macos: macos-14
+        - xcode: 15.2
+          macos: macos-14
     steps:
-    - uses: actions/checkout@v2
+    - name: Checkout Repo
+      uses: actions/checkout@v4
+    - name: Test
+      run: ${{ env.XCODEBUILD }} -scheme "${{ env.SCHEME }}" -destination "platform=macOS" clean test | xcbeautify
 
-    # Setup Ruby and Bundler
+  test-ios:
+    name: Test (iOS, Xcode ${{ matrix.xcode }})
+    runs-on: ${{ matrix.macos }}
+    env:
+      DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer'
+    strategy:
+      matrix:
+        xcode: [ 14.3.1, 15.2 ]
+        include:
+        - xcode: 14.3.1
+          macos: macos-14
+          destination: "platform=iOS Simulator,name=iPhone 14,OS=16.4"
+        - xcode: 15.2
+          macos: macos-14
+          destination: "platform=iOS Simulator,name=iPhone 14,OS=17.2"
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v4
+    - name: Test
+      run: ${{ env.XCODEBUILD }} -scheme "${{ env.SCHEME }}" -destination "${{ matrix.destination }}" clean test | xcbeautify
+
+  test-tvos:
+    name: Test (tvOS, Xcode ${{ matrix.xcode }})
+    runs-on: ${{ matrix.macos }}
+    strategy:
+      matrix:
+        xcode: [ 14.3.1, 15.2 ]
+        include:
+        - xcode: 14.3.1
+          macos: macos-14
+          destination: "platform=tvOS Simulator,name=Apple TV,OS=16.4"
+        - xcode: 15.2
+          macos: macos-14
+          destination: "platform=tvOS Simulator,name=Apple TV,OS=17.2"
+    env:
+      DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer'
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v4
+    - name: Test
+      run: ${{ env.XCODEBUILD }} -scheme "${{ env.SCHEME }}" -destination "${{ matrix.destination }}" clean test | xcbeautify
+
+  test-watchos:
+    name: Test (watchOS, Xcode ${{ matrix.xcode }})
+    runs-on: ${{ matrix.macos }}
+    strategy:
+      matrix:
+        xcode: [ 14.3.1, 15.2 ]
+        include:
+        - xcode: 14.3.1
+          macos: macos-14
+          destination: "platform=watchOS Simulator,name=Apple Watch Series 8 (41mm),OS=9.4"
+        - xcode: 15.2
+          macos: macos-14
+          destination: "platform=watchOS Simulator,name=Apple Watch Series 9 (41mm),OS=10.2"
+    env:
+      DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer'
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v4
+    - name: Test
+      run: ${{ env.XCODEBUILD }} -scheme "${{ env.SCHEME }}" -destination "${{ matrix.destination }}" clean test | xcbeautify
+
+  example:
+    name: Example Project
+    runs-on: macos-14
+    env:
+      DEVELOPER_DIR: '/Applications/Xcode_15.2.app/Contents/Developer'
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v4
+    - name: UI Test
+      run: ${{ env.XCODEBUILD }} -workspace "Example/Example.xcworkspace" -scheme "Example" -destination "platform=iOS Simulator,name=iPhone 14,OS=17.2" clean test | xcbeautify
+
+  cocoapods:
+    name: CocoaPods
+    runs-on: macos-14
+    steps:
+    - name: Checkout Repo
+      uses: actions/checkout@v4
     - name: Setup Ruby
       uses: ruby/setup-ruby@v1
       with:
         bundler-cache: true
-
-    # Build library & Run Unit-Tests (MacOS)
-    - name: Build & Unit-Test Library (MacOS)
-      run: set -o pipefail && env NSUnbufferedIO=YES xcodebuild -scheme $SCHEME -destination "${{ matrix.destination_macos }}" clean test | bundle exec xcpretty
-
-    # Build library & Run Unit-Tests (iOS)
-    - name: Build & Unit-Test Library (iOS)
-      run: set -o pipefail && env NSUnbufferedIO=YES xcodebuild -scheme $SCHEME -destination "${{ matrix.destination_ios }}" clean test | bundle exec xcpretty
-
-    # Build library & Run Unit-Tests (watchOS)
-    - name: Build & Unit-Test Library (watchOS)
-      run: set -o pipefail && env NSUnbufferedIO=YES xcodebuild -scheme $SCHEME -destination "${{ matrix.destination_watchos }}" clean test | bundle exec xcpretty
-
-    # Build library & Run Unit-Tests (tvOS)
-    - name: Build & Unit-Test Library (tvOS)
-      run: set -o pipefail && env NSUnbufferedIO=YES xcodebuild -scheme $SCHEME -destination "${{ matrix.destination_tvos }}" clean test | bundle exec xcpretty
-
-    # Build Example Project & Run UI-Tests (iOS)
-    - name: Build & UI-Test Example Project (iOS)
-      run: set -o pipefail && env NSUnbufferedIO=YES xcodebuild -workspace "Example/Example.xcworkspace" -scheme "Example" -destination "${{ matrix.destination_ios }}" clean test | bundle exec xcpretty
-
-    # Verify CocoaPods
-    - name: Verify CocoaPods
-      run: bundle exec pod lib lint
+    - name: Lint
+      run: make lint
