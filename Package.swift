@@ -7,9 +7,9 @@ let package = Package(
     name: "swift-user-defaults",
     platforms: [
         .macOS(.v10_13),
-        .iOS(.v11),
+        .iOS(.v12),
         .watchOS(.v7),
-        .tvOS(.v11)
+        .tvOS(.v12)
     ],
     products: [
         .library(name: "SwiftUserDefaults", targets: ["SwiftUserDefaults"]),
