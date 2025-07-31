@@ -22,8 +22,6 @@
 
 import Foundation
 
-private var userDefaultsObserverContext = 0
-
 public extension UserDefaults {
     /// Observes changes to the object associated with the specified key.
     ///
@@ -59,6 +57,7 @@ public extension UserDefaults {
         let userDefaults: UserDefaults
         let keyPath: String
         let handler: (Change<Any?>) -> Void
+        private var userDefaultsObserverContext = 0
 
         private(set) var isRegistered: Bool = false
 
