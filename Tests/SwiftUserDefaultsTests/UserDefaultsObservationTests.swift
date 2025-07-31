@@ -58,9 +58,11 @@ final class UserDefaultsObservationTests: XCTestCase {
     func testInvalidateOnDeinit() {
         // Given an observer is registered
         var changes: [UserDefaults.Change<Any?>] = []
+
         var observer: UserDefaults.Observation? = userDefaults.observeObject(forKey: "TestKey") { change in
             changes.append(change)
         }
+        _ = observer
 
         userDefaults.set("Test", forKey: "TestKey")
 
