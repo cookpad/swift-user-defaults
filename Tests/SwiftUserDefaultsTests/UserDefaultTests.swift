@@ -85,6 +85,7 @@ final class UserDefaultTests: XCTestCase {
         XCTAssertNil(userDefaults.object(forKey: "BoolKey"))
     }
 
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func testObserver() {
         let wrapper = UserDefault<String>(.init("StringKey"), store: userDefaults, defaultValue: "")
 
@@ -100,6 +101,7 @@ final class UserDefaultTests: XCTestCase {
         XCTAssertEqual(changes, [.initial(""), .update("One"), .update(""), .update("Two"), .update("Three")])
     }
 
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func testCodableWithDefault() {
         let key = UserDefaults.Key("CodableKey")
         let wrapper = UserDefault<Subject>(key, strategy: .json, store: userDefaults, defaultValue: Subject(value: "default"))
@@ -135,6 +137,7 @@ final class UserDefaultTests: XCTestCase {
         ])
     }
 
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func testCodable() {
         let key = UserDefaults.Key("CodableKey")
         let wrapper = UserDefault<Subject?>(key, strategy: .json, store: userDefaults)
@@ -177,6 +180,7 @@ final class UserDefaultTests: XCTestCase {
         ])
     }
 
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func testRawRepresentableWithDefault() {
         let key = UserDefaults.Key("RawRepresentableKey")
         let wrapper = UserDefault<RawSubject>(key, store: userDefaults, defaultValue: .foo)
@@ -212,6 +216,7 @@ final class UserDefaultTests: XCTestCase {
         ])
     }
 
+    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func testRawRepresentable() {
         let key = UserDefaults.Key("RawRepresentableKey")
         let wrapper = UserDefault<RawSubject?>(key, store: userDefaults)
