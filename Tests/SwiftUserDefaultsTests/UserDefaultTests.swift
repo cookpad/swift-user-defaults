@@ -85,13 +85,11 @@ final class UserDefaultTests: XCTestCase {
         XCTAssertNil(userDefaults.object(forKey: "BoolKey"))
     }
 
-    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func testObserver() {
         let wrapper = UserDefault<String>(.init("StringKey"), store: userDefaults, defaultValue: "")
 
         var changes: [UserDefaults.Change<String>] = []
         let observer = wrapper.addObserver { changes.append($0) }
-        addTeardownBlock(observer.invalidate)
 
         wrapper.wrappedValue = "One"
         wrapper.reset()
@@ -99,9 +97,9 @@ final class UserDefaultTests: XCTestCase {
         userDefaults.x.set("Three", forKey: .init("StringKey"))
 
         XCTAssertEqual(changes, [.initial(""), .update("One"), .update(""), .update("Two"), .update("Three")])
+        observer.invalidate()
     }
 
-    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func testCodableWithDefault() {
         let key = UserDefaults.Key("CodableKey")
         let wrapper = UserDefault<Subject>(key, strategy: .json, store: userDefaults, defaultValue: Subject(value: "default"))
@@ -109,7 +107,6 @@ final class UserDefaultTests: XCTestCase {
         // Observe changes
         var changes: [Subject] = []
         let token = wrapper.addObserver(handler: { changes.append($0.value) })
-        addTeardownBlock(token.invalidate)
 
         // Uses default
         XCTAssertNil(userDefaults.object(forKey: key.rawValue))
@@ -135,9 +132,9 @@ final class UserDefaultTests: XCTestCase {
             "default",
             "default"
         ])
+        token.invalidate()
     }
 
-    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func testCodable() {
         let key = UserDefaults.Key("CodableKey")
         let wrapper = UserDefault<Subject?>(key, strategy: .json, store: userDefaults)
@@ -145,7 +142,6 @@ final class UserDefaultTests: XCTestCase {
         // Observe changes
         var changes: [Subject?] = []
         let token = wrapper.addObserver(handler: { changes.append($0.value) })
-        addTeardownBlock(token.invalidate)
 
         // nil when unset
         XCTAssertNil(userDefaults.object(forKey: key.rawValue))
@@ -178,9 +174,9 @@ final class UserDefaultTests: XCTestCase {
             "value",
             nil
         ])
+        token.invalidate()
     }
 
-    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func testRawRepresentableWithDefault() {
         let key = UserDefaults.Key("RawRepresentableKey")
         let wrapper = UserDefault<RawSubject>(key, store: userDefaults, defaultValue: .foo)
@@ -188,7 +184,6 @@ final class UserDefaultTests: XCTestCase {
         // Observe changes
         var changes: [RawSubject] = []
         let token = wrapper.addObserver(handler: { changes.append($0.value) })
-        addTeardownBlock(token.invalidate)
 
         // Uses default
         XCTAssertNil(userDefaults.object(forKey: key.rawValue))
@@ -214,9 +209,9 @@ final class UserDefaultTests: XCTestCase {
             .foo,
             .foo
         ])
+        token.invalidate()
     }
 
-    @available(iOS 13.0, macOS 10.15, tvOS 13.0, watchOS 6.0, *)
     func testRawRepresentable() {
         let key = UserDefaults.Key("RawRepresentableKey")
         let wrapper = UserDefault<RawSubject?>(key, store: userDefaults)
@@ -224,7 +219,6 @@ final class UserDefaultTests: XCTestCase {
         // Observe changes
         var changes: [RawSubject?] = []
         let token = wrapper.addObserver(handler: { changes.append($0.value) })
-        addTeardownBlock(token.invalidate)
 
         // Uses default
         XCTAssertNil(userDefaults.object(forKey: key.rawValue))
@@ -256,5 +250,6 @@ final class UserDefaultTests: XCTestCase {
             nil,
             .baz
         ])
+        token.invalidate()
     }
 }

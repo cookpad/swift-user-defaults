@@ -65,7 +65,7 @@ public extension UserDefaults {
     ///
     /// let rawValue = UserDefaults.standard.string(forKey: UserDefaults.Key.userState.rawValue)
     /// ```
-    struct Key: RawRepresentable, Hashable {
+    struct Key: RawRepresentable, Hashable, Sendable {
         /// The underlying string value that is used for assigning a value against within the user defaults.
         public let rawValue: String
 

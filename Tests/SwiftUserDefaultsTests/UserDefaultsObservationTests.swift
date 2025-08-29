@@ -54,6 +54,27 @@ final class UserDefaultsObservationTests: XCTestCase {
         XCTAssertEqual(changes.map(\.value) as NSArray, [nil, "Test", nil, "Default", 1] as NSArray)
         XCTAssertEqual(changes.map(\.label), [.initial, .update, .update, .update, .update])
     }
+
+    func testInvalidateOnDeinit() {
+        // Given an observer is registered
+        var changes: [UserDefaults.Change<Any?>] = []
+
+        var observer: UserDefaults.Observation? = userDefaults.observeObject(forKey: "TestKey") { change in
+            changes.append(change)
+        }
+        _ = observer
+
+        userDefaults.set("Test", forKey: "TestKey")
+
+        // When the observer is deallocated
+        observer = nil
+
+        // Then no further changes should be recorded
+        userDefaults.set("NewTest", forKey: "TestKey")
+
+        XCTAssertEqual(changes.map(\.value) as NSArray, [nil, "Test"] as NSArray)
+        XCTAssertEqual(changes.map(\.label), [.initial, .update])
+    }
 }
 
 private extension UserDefaults.Change {
