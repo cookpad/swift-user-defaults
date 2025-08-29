@@ -18,10 +18,8 @@ jobs:
       DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer'
     strategy:
       matrix:
-        xcode: [ 15.4, 16.4 ]
+        xcode: [ 16.4 ]
         include:
-        - xcode: 15.4
-          macos: macos-14
         - xcode: 16.4
           macos: macos-15
     steps:
@@ -37,11 +35,8 @@ jobs:
       DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer'
     strategy:
       matrix:
-        xcode: [ 15.4, 16.4 ]
+        xcode: [ 16.4 ]
         include:
-        - xcode: 15.4
-          macos: macos-14
-          destination: "platform=iOS Simulator,name=iPhone 15,OS=17.5"
         - xcode: 16.4
           macos: macos-15
           destination: "platform=iOS Simulator,name=iPhone 16,OS=18.5"
@@ -56,11 +51,8 @@ jobs:
     runs-on: ${{ matrix.macos }}
     strategy:
       matrix:
-        xcode: [ 15.4, 16.4 ]
+        xcode: [ 16.4 ]
         include:
-        - xcode: 15.4
-          macos: macos-14
-          destination: "platform=tvOS Simulator,name=Apple TV,OS=17.5"
         - xcode: 16.4
           macos: macos-15
           destination: "platform=tvOS Simulator,name=Apple TV,OS=18.5"
@@ -77,11 +69,8 @@ jobs:
     runs-on: ${{ matrix.macos }}
     strategy:
       matrix:
-        xcode: [ 15.4, 16.4 ]
+        xcode: [ 16.4 ]
         include:
-        - xcode: 15.4
-          macos: macos-14
-          destination: "platform=watchOS Simulator,name=Apple Watch Series 9 (41mm),OS=10.5"
         - xcode: 16.4
           macos: macos-15
           destination: "platform=watchOS Simulator,name=Apple Watch Series 10 (42mm),OS=11.5"
