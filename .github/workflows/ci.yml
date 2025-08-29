@@ -18,12 +18,12 @@ jobs:
       DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer'
     strategy:
       matrix:
-        xcode: [ 14.3.1, 15.2 ]
+        xcode: [ 15.4, 16.4 ]
         include:
-        - xcode: 14.3.1
+        - xcode: 15.4
           macos: macos-14
-        - xcode: 15.2
-          macos: macos-14
+        - xcode: 16.4
+          macos: macos-15
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v4
@@ -37,14 +37,14 @@ jobs:
       DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer'
     strategy:
       matrix:
-        xcode: [ 14.3.1, 15.2 ]
+        xcode: [ 15.4, 16.4 ]
         include:
-        - xcode: 14.3.1
+        - xcode: 15.4
           macos: macos-14
-          destination: "platform=iOS Simulator,name=iPhone 14,OS=16.4"
-        - xcode: 15.2
-          macos: macos-14
-          destination: "platform=iOS Simulator,name=iPhone 14,OS=17.2"
+          destination: "platform=iOS Simulator,name=iPhone 15,OS=17.5"
+        - xcode: 16.4
+          macos: macos-15
+          destination: "platform=iOS Simulator,name=iPhone 16,OS=18.5"
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v4
@@ -56,14 +56,14 @@ jobs:
     runs-on: ${{ matrix.macos }}
     strategy:
       matrix:
-        xcode: [ 14.3.1, 15.2 ]
+        xcode: [ 15.4, 16.4 ]
         include:
-        - xcode: 14.3.1
+        - xcode: 15.4
           macos: macos-14
-          destination: "platform=tvOS Simulator,name=Apple TV,OS=16.4"
-        - xcode: 15.2
-          macos: macos-14
-          destination: "platform=tvOS Simulator,name=Apple TV,OS=17.2"
+          destination: "platform=tvOS Simulator,name=Apple TV,OS=17.5"
+        - xcode: 16.4
+          macos: macos-15
+          destination: "platform=tvOS Simulator,name=Apple TV,OS=18.5"
     env:
       DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer'
     steps:
@@ -77,14 +77,14 @@ jobs:
     runs-on: ${{ matrix.macos }}
     strategy:
       matrix:
-        xcode: [ 14.3.1, 15.2 ]
+        xcode: [ 15.4, 16.4 ]
         include:
-        - xcode: 14.3.1
+        - xcode: 15.4
           macos: macos-14
-          destination: "platform=watchOS Simulator,name=Apple Watch Series 8 (41mm),OS=9.4"
-        - xcode: 15.2
-          macos: macos-14
-          destination: "platform=watchOS Simulator,name=Apple Watch Series 9 (41mm),OS=10.2"
+          destination: "platform=watchOS Simulator,name=Apple Watch Series 9 (41mm),OS=10.5"
+        - xcode: 16.4
+          macos: macos-15
+          destination: "platform=watchOS Simulator,name=Apple Watch Series 10 (42mm),OS=11.5"
     env:
       DEVELOPER_DIR: '/Applications/Xcode_${{ matrix.xcode }}.app/Contents/Developer'
     steps:
@@ -95,18 +95,18 @@ jobs:
 
   example:
     name: Example Project
-    runs-on: macos-14
+    runs-on: macos-15
     env:
-      DEVELOPER_DIR: '/Applications/Xcode_15.2.app/Contents/Developer'
+      DEVELOPER_DIR: '/Applications/Xcode_16.4.app/Contents/Developer'
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v4
     - name: UI Test
-      run: ${{ env.XCODEBUILD }} -workspace "Example/Example.xcworkspace" -scheme "Example" -destination "platform=iOS Simulator,name=iPhone 14,OS=17.2" clean test | xcbeautify
+      run: ${{ env.XCODEBUILD }} -workspace "Example/Example.xcworkspace" -scheme "Example" -destination "platform=iOS Simulator,name=iPhone 16,OS=18.5" clean test | xcbeautify
 
   cocoapods:
     name: CocoaPods
-    runs-on: macos-14
+    runs-on: macos-15
     steps:
     - name: Checkout Repo
       uses: actions/checkout@v4
