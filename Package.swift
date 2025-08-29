@@ -6,10 +6,10 @@ import PackageDescription
 let package = Package(
     name: "swift-user-defaults",
     platforms: [
-        .macOS(.v10_13),
-        .iOS(.v12),
+        .macOS(.v15),
+        .iOS(.v15),
         .watchOS(.v7),
-        .tvOS(.v12)
+        .tvOS(.v15)
     ],
     products: [
         .library(name: "SwiftUserDefaults", targets: ["SwiftUserDefaults"]),

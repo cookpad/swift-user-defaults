@@ -9,10 +9,10 @@ Pod::Spec.new do |s|
   s.source = { :git => "https://github.com/cookpad/swift-user-defaults.git", :tag => "#{s.version}" }
   s.source_files = "Sources/**/*.{swift}"
   s.resource_bundles = {'SwiftUserDefaults' => ['Sources/SwiftUserDefaults/PrivacyInfo.xcprivacy']}
-  s.swift_version = "5.3"
+  s.swift_version = "6.0"
 
-  s.ios.deployment_target = '12.0'
-  s.osx.deployment_target = '10.13'
+  s.ios.deployment_target = '15.0'
+  s.osx.deployment_target = '15.0'
 
   # Run Unit Tests
   s.test_spec 'Tests' do |test_spec|
